@@ -1,0 +1,53 @@
+# ==========================================
+# 1. Build & Compiled Files
+# ==========================================
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Java class files
+*.class
+
+# ==========================================
+# 2. File bawaan Code Editor / IDE 
+# ==========================================
+# VS Code
+.vscode/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse / Spring Tool Suite
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# ==========================================
+# 3. Log & OS Files 
+# ==========================================
+*.log
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# 4. Environment Variables 
+# ==========================================
+.env
+.env.*
+application-secret.yml
+application-secret.properties

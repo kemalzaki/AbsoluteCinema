@@ -17,11 +17,9 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // PASTIKAN MENERIMA UserDTO.RegisterRequest
     public UserDTO.Response register(UserDTO.RegisterRequest dto) {
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         
-        // Membuat objek user dengan role MEMBER agar lolos validasi entity
         User user = new User(dto.getUsername(), hashedPassword, "MEMBER");
         userRepository.save(user);
 
@@ -33,7 +31,6 @@ public class AuthService {
         );
     }
 
-    // PASTIKAN MENERIMA UserDTO.LoginRequest
     public UserDTO.Response login(UserDTO.LoginRequest dto) {
         User user = userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new RuntimeException("Username tidak ditemukan"));

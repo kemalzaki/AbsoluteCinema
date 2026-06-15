@@ -1,4 +1,4 @@
-package com.cinereview.model; // Disesuaikan dengan folder com/cinereview/model
+package com.oop.absolutecinema.entity;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;

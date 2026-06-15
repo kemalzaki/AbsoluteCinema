@@ -15,7 +15,9 @@ import jakarta.persistence.*;
  * Catatan: Kelas ini menggunakan @MappedSuperclass agar JPA (Orang 3)
  * bisa memetakan atribut ini ke tabel database masing-masing kelas anak.
  */
-@MappedSuperclass
+@Entity
+@Table(name = "tayangan")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Tayangan implements Rateable {
 
     // =========================================================

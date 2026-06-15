@@ -1,4 +1,4 @@
-package com.cinereview.model;
+package com.oop.absolutecinema.entity;
 
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -49,9 +49,9 @@ public class Review {
     }
 
     public void setSkor(int skor) {
-        // Mengunci Business Rule: Skor wajib berskala 1 - 10
-        if (skor < 1 || skor > 10) {
-            throw new IllegalArgumentException("Skor manipulatif! Range skor valid adalah 1 hingga 10.");
+        // Mengunci Business Rule: Skor wajib berskala 1 - 5
+        if (skor < 1 || skor > 5) {
+            throw new IllegalArgumentException("Skor manipulatif! Range skor valid adalah 1 hingga 5.");
         }
         this.skor = skor;
     }

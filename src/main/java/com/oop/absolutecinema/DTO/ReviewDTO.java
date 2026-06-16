@@ -57,5 +57,12 @@ public class ReviewDTO {
         public String getJudulTayangan() { return judulTayangan; }
         public int getSkor() { return skor; }
         public String getTeks() { return teks; }
+
+        public void setId(Long id) { this.id = id; }
+        public void setUsernameUser(String usernameUser) { this.usernameUser = usernameUser; }
+        public void setJudulTayangan(String judulTayangan) { this.judulTayangan = judulTayangan; }
+        public void setSkor(int skor) { this.skor = skor; }
+        public void setTeks(String teks) { this.teks = teks; }
+        
     }
 }

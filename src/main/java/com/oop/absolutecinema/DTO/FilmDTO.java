@@ -52,5 +52,12 @@ public class FilmDTO {
         public int getDurasiMenit() { return durasiMenit; }
         public int getTahunRilis() { return tahunRilis; }
         public double getRatingRataRata() { return ratingRataRata; }
+
+        public void setId(Long id) { this.id = id; }
+        public void setJudul(String judul) { this.judul = judul; }
+        public void setSinopsis(String sinopsis) { this.sinopsis = sinopsis; }
+        public void setDurasiMenit(int durasiMenit) { this.durasiMenit = durasiMenit; }
+        public void setTahunRilis(int tahunRilis) { this.tahunRilis = tahunRilis; }
+        public void setRatingRataRata(double ratingRataRata) { this.ratingRataRata = ratingRataRata; }
     }
 }

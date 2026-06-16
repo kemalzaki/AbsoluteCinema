@@ -30,7 +30,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Review tambahReview(ReviewDTO reviewDto) {
         // Ekstraksi data dari DTO sesuai kebutuhan
-        Long tayanganId = Long.parseLong(String.valueOf(reviewDto.getTayanganId()));
+        Long tayanganId = reviewDto.getTayanganId();
         Long userId = reviewDto.getUserId();
         int skor = reviewDto.getSkor();
         String teks = reviewDto.getTeks();
@@ -71,7 +71,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> lihatReviewBerdasarkanUser(LongSummaryStatistics userId) {
+    public List<Review> lihatReviewBerdasarkanUser(Long userId) {
         return reviewRepository.findByUserId(userId);
     }
 }

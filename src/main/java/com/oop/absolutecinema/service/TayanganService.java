@@ -8,4 +8,5 @@ public interface TayanganService {
   Tayangan lihatTayanganBerdasarkanId(Long id);
   Tayangan editTayangan(Long id, Tayangan dataEdit);
   void hapusTayangan(Long id);
+  void perbaruiDataTayangan(Tayangan tayangan);
 }

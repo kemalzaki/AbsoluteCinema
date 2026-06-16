@@ -1,4 +1,4 @@
-package com.oop.absolutecinema.dto;
+package com.oop.absolutecinema.DTO;
 
 import jakarta.validation.constraints.*;
 

@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-  public interface UserRepository extends JpaRepository<User, String> {
+  public interface UserRepository extends JpaRepository<User, Long> {
 
     // Mencari user berdasarkan username
     // untuk mencocokkan username yang diinput dengan yang ada di database saat proses LOGIN

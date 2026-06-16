@@ -1,6 +1,6 @@
 package com.oop.absolutecinema.service;
 
-import com.oop.absolutecinema.dto.ReviewDTO;
+import com.oop.absolutecinema.DTO.ReviewDTO;
 import com.oop.absolutecinema.entity.Review;
 import com.oop.absolutecinema.entity.Tayangan;
 import com.oop.absolutecinema.entity.User;
@@ -10,6 +10,7 @@ import com.oop.absolutecinema.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.LongSummaryStatistics;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -30,7 +31,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Review tambahReview(ReviewDTO reviewDto) {
         // Ekstraksi data dari DTO sesuai kebutuhan
         Long tayanganId = Long.parseLong(String.valueOf(reviewDto.getTayanganId()));
-        String userId = reviewDto.getUserId();
+        Long userId = reviewDto.getUserId();
         int skor = reviewDto.getSkor();
         String teks = reviewDto.getTeks();
 
@@ -70,7 +71,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> lihatReviewBerdasarkanUser(String userId) {
+    public List<Review> lihatReviewBerdasarkanUser(LongSummaryStatistics userId) {
         return reviewRepository.findByUserId(userId);
     }
 }

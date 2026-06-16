@@ -10,7 +10,6 @@ import com.oop.absolutecinema.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.LongSummaryStatistics;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -28,7 +27,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review tambahReview(ReviewDTO reviewDto) {
+    public Review tambahReview(ReviewDTO.Request reviewDto) {
         // Ekstraksi data dari DTO sesuai kebutuhan
         Long tayanganId = reviewDto.getTayanganId();
         Long userId = reviewDto.getUserId();
@@ -42,8 +41,12 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         // 2. Ambil entitas User dari database
+        if (userId == null) {
+            throw new DataTidakDitemukanException("User ID tidak boleh null!");
+        }
+
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataTidakDitemukanException("User dengan ID " + userId + " tidak ditemukan!"));
+            .orElseThrow(() -> new DataTidakDitemukanException("User dengan ID " + userId + " tidak ditemukan!"));
 
         // 3. Ambil entitas Tayangan menggunakan TayanganService (sesuai Class Diagram)
         Tayangan tayangan = tayanganService.lihatTayanganBerdasarkanId(tayanganId);
@@ -56,7 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
         tayangan.tambahReview(skor);
 
         // Delegasikan penyimpanan tayangan kembali ke TayanganService
-        tayanganService.editTayangan(tayanganId, tayangan);
+        tayanganService.perbaruiDataTayangan(tayangan);
 
 
 

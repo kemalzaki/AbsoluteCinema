@@ -57,6 +57,9 @@ public class TayanganServiceImpl implements TayanganService {
 
     @Override
     public Tayangan lihatTayanganBerdasarkanId(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID tidak boleh null");
+        }
         // Cari di tabel Film 
         Optional<Film> film = filmRepo.findById(id);
         if (film.isPresent()) {

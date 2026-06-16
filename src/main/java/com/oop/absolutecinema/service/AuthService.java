@@ -24,10 +24,10 @@ public class AuthService {
         userRepository.save(user);
 
         return new UserDTO.Response(
-                user.getId(),
-                user.getUsername(),
-                user.getRole(),
-                "Registrasi berhasil!"
+            user.getId(),
+            user.getUsername(),
+            user.getRole(),
+            "Registrasi berhasil!"
         );
     }
 
@@ -40,10 +40,10 @@ public class AuthService {
         }
 
         return new UserDTO.Response(
-                user.getId(),
-                user.getUsername(),
-                user.getRole(),
-                "Login berhasil!"
+            user.getId(),
+            user.getUsername(),
+            user.getRole(),
+            "Login berhasil!"
         );
     }
 }

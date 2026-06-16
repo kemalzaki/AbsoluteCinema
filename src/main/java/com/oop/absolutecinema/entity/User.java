@@ -3,13 +3,13 @@ package com.oop.absolutecinema.entity;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -36,7 +36,6 @@ public class User {
     protected User() {}
 
     public User(String username, String password, String role) {
-        this.id = UUID.randomUUID().toString();
         setUsername(username); // Memaksa validasi guard clause berjalan saat objek dibuat
         setPassword(password);
         setRole(role);
@@ -44,8 +43,12 @@ public class User {
 
     // --- ENCAPSULATION & VALIDATION (GUARD CLAUSES) ---
 
-    public String getId() {
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {

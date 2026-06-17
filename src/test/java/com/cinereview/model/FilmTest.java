@@ -2,7 +2,6 @@ package com.cinereview.model;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import com.cinereview.model.Film;
 
 public class FilmTest {
 
@@ -11,5 +10,13 @@ public class FilmTest {
         Film film = new Film();
         film.setDurasiMenit(120);
         assertEquals(120, film.getDurasiMenit());
+    }
+
+    @Test
+    void testSetDurasiMenitGanjilAtauNegatif() {
+        Film film = new Film();
+        
+        film.setDurasiMenit(-50); 
+        assertTrue(film.getDurasiMenit() <= 0, "Durasi tidak boleh negatif");
     }
 }

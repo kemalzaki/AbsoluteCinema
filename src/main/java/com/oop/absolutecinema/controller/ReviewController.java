@@ -1,28 +1,33 @@
 package com.oop.absolutecinema.controller;
 
+import com.oop.absolutecinema.DTO.ReviewDTO;
+import com.oop.absolutecinema.service.ReviewService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/review")
+@RequestMapping("/api/reviews")
 public class ReviewController {
 
-    @GetMapping("/tayangan/{tayanganId}")
-    public String tampilkanReviewTayangan(
-            @PathVariable Long tayanganId) {
-
-        return "Menampilkan review untuk tayangan " + tayanganId;
-    }
+    @Autowired
+    private ReviewService reviewService;
 
     @PostMapping
-    public String tambahReview() {
+    public ResponseEntity<?> tambahReview(@Valid @RequestBody ReviewDTO.Request request) {
+        try {
 
-        return "Review berhasil ditambahkan";
-    }
+            Object reviewBaru = reviewService.tambahReview(request);
 
-    @DeleteMapping("/{id}")
-    public String hapusReview(
-            @PathVariable String id) {
+            return new ResponseEntity<>(reviewBaru, HttpStatus.CREATED);
 
-        return "Review berhasil dihapus";
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>("Terjadi kesalahan pada server saat menyimpan review.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

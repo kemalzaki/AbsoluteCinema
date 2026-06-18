@@ -515,24 +515,18 @@
             <h3 class="modal-title">Submit Your Review</h3>
             
             <div class="form-group">
-                <label class="form-label">Your Name</label>
-                <input type="text" class="form-control" placeholder="John Doe">
+                <label class="form-label">Movie ID</label>
+                <input type="number" id="review-tayangan-id" class="form-control" placeholder="Enter movie ID (e.g. 1)">
             </div>
             <div class="form-group">
-                <label class="form-label">Movie Name</label>
-                <input type="text" class="form-control" placeholder="Select a movie...">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Your Rating</label>
-                <div class="interactive-stars" style="color: var(--star-color);">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span style="color: var(--border-color);">★</span>
-                </div>
+                <label class="form-label">Your Rating (1-5)</label>
+                <input type="number" id="review-skor" class="form-control" min="1" max="5" placeholder="5">
             </div>
             <div class="form-group">
                 <label class="form-label">Your Review</label>
-                <textarea class="form-control" placeholder="Share your thoughts about the movie..."></textarea>
+                <textarea id="review-teks" class="form-control" placeholder="Share your thoughts about the movie..."></textarea>
             </div>
-            <button class="btn btn-primary btn-full" onclick="closeModal('review-modal')">Submit Review</button>
+            <button class="btn btn-primary btn-full" onclick="submitReviewRequest()">Submit Review</button>
         </div>
     </div>
 
@@ -630,6 +624,48 @@
                 }
             });
         });
+
+        // --- Submit Review Fetch API ---
+        async function submitReviewRequest() {
+            const userId = 1; // Dummy user ID for prototype testing
+            const tayanganId = document.getElementById('review-tayangan-id').value;
+            const skorText = document.getElementById('review-skor').value;
+            const teks = document.getElementById('review-teks').value;
+
+            if(!tayanganId || !skorText || !teks) {
+                alert('Tolong lengkapi semua field!');
+                return;
+            }
+
+            const payload = {
+                userId: parseInt(userId),
+                tayanganId: parseInt(tayanganId),
+                skor: parseInt(skorText),
+                teks: teks
+            };
+
+            try {
+                const response = await fetch('/api/reviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert('Review berhasil disubmit!');
+                    closeModal('review-modal');
+                    window.location.reload(); // Refresh to see updated ratings
+                } else {
+                    const errMsg = await response.text();
+                    alert('Gagal: ' + errMsg);
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                alert('Terjadi kesalahan jaringan.');
+            }
+        }
     </script>
 </body>
 </html>

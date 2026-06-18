@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AbsoluteCinema Reviews</title>
+    <style>
+        /* --- CSS VARIABLES & RESETS --- */
+        :root {
+            --primary-color: #ff002b; /* Vibrant red from design */
+            --primary-hover: #cc0022;
+            --bg-base: #0a0a0a;
+            --bg-surface: #141414;
+            --bg-elevated: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --border-color: #333333;
+            --star-color: #f5c518;
+            --nav-height: 80px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            overflow-x: hidden; /* Prevent horizontal scroll from slider */
+            overflow-y: hidden; /* Main window won't scroll, inner sections will */
+        }
+
+        button, a {
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        /* --- HEADER NAVIGATION --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background-color: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .logo .text-primary {
+            color: var(--primary-color);
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--text-primary);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        nav a.active::after, nav a:hover::after {
+            width: 100%;
+        }
+
+        /* --- SPA SLIDER SYSTEM --- */
+        .spa-viewport {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden; /* Hides off-screen sections */
+            position: relative;
+        }
+
+        .spa-slider {
+            display: flex;
+            width: 400vw; /* 4 sections */
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .slide-section {
+            width: 100vw;
+            height: 100%;
+            overflow-y: auto; /* Allow scrolling inside the section */
+            padding-top: var(--nav-height);
+            padding-bottom: 4rem;
+        }
+
+        /* --- SECTION ALIGNMENTS --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            position: relative;
+            height: 50vh;
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero-content {
+            padding: 0 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 .text-primary { color: var(--primary-color); }
+        .hero p {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .btn-group { display: flex; gap: 1rem; }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 0, 43, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--text-secondary);
+            color: var(--text-primary);
+        }
+        .btn-outline:hover {
+            border-color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* --- MOVIE GRID & CARDS --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .movie-card {
+            background-color: var(--bg-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+            border-color: #555;
+        }
+
+        .movie-img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .movie-info {
+            padding: 1.2rem;
+        }
+
+        .movie-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stars { color: var(--star-color); letter-spacing: 2px; }
+
+        .btn-full {
+            width: 100%;
+            display: block;
+        }
+
+        /* --- FILTERS (Movies Section) --- */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover { background-color: var(--bg-elevated); color: white; }
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* --- REVIEWS LIST --- */
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .review-item {
+            background-color: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s;
+        }
+        .review-item:hover { border-color: #555; }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .review-author { font-weight: 600; font-size: 1.1rem; }
+        .review-movie { color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;}
+        .review-text { color: #cccccc; line-height: 1.6; margin-bottom: 1rem; }
+        
+        .review-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .btn-small { padding: 6px 12px; font-size: 0.85rem; }
+
+        /* --- MODALS --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 2000;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal-content {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content { transform: scale(1); }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem; right: 1.5rem;
+            background: none; border: none; color: var(--text-secondary);
+            font-size: 1.5rem; cursor: pointer;
+        }
+        .modal-close:hover { color: white; }
+
+        .modal-title { margin-bottom: 1.5rem; font-size: 1.5rem; }
+
+        /* Form Controls */
+        .form-group { margin-bottom: 1.2rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary); }
+        .form-control {
+            width: 100%; padding: 10px;
+            background-color: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 6px; color: white;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary-color); }
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        /* Rating Rows (Calculate Modal) */
+        .rating-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .interactive-stars { font-size: 1.5rem; color: var(--border-color); cursor: pointer; }
+        .interactive-stars span:hover, .interactive-stars span.active { color: var(--star-color); }
+
+        .final-rating { text-align: center; margin-top: 1.5rem; }
+        .final-rating h2 { font-size: 2.5rem; color: white; margin-top: 0.5rem;}
+        .final-rating h2 span { font-size: 1rem; color: var(--text-secondary); }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><span>AbsoluteCinema</span> <span class="text-primary">Reviews</span></div>
+        <nav>
+            <a href="#" data-target="home" class="active">Home</a>
+            <a href="#" data-target="movies">Movies</a>
+            <a href="#" data-target="reviews">Reviews</a>
+            <a href="#" data-target="contact">Contact</a>
+        </nav>
+    </header>
+
+    <main class="spa-viewport">
+        <div class="spa-slider" id="slider">
+            
+            <section class="slide-section" id="home">
+                <div class="hero">
+                    <div class="hero-content">
+                        <h1>AbsoluteCinema <span class="text-primary">Reviews</span></h1>
+                        <p>Discover. Review. Rate.</p>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="goToSlide('reviews')">View Reviews</button>
+                            <button class="btn btn-outline" onclick="goToSlide('movies')">Explore Movies</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Featured Movies</h2>
+                        <button class="btn btn-outline btn-small" onclick="goToSlide('movies')">View All</button>
+                    </div>
+                    <div class="movie-grid">
+                        <div class="movie-card">
+                            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="The Walking Dead" class="movie-img">
+                            <div class="movie-info">
+                                <h3 class="movie-title">The Walking Dead</h3>
+                                <div class="movie-rating"><span class="stars">★★★★★</span> 5.0</div>
+                                <button class="btn btn-primary btn-full">View Review</button>
+                            </div>
+                        </div>
+                        <div class="movie-card">
+                            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Capitol Cinema" class="movie-img">
+                            <div class="movie-info">
+                                <h3 class="movie-title">Capitol Cinema</h3>
+                                <div class="movie-rating"><span class="stars">★★★★☆</span> 4.0</div>
+                                <button class="btn btn-primary btn-full">View Review</button>
+                            </div>
+                        </div>
+                        <div class="movie-card">
+                            <img src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Classic Films" class="movie-img">
+                            <div class="movie-info">
+                                <h3 class="movie-title">Classic Films</h3>
+                                <div class="movie-rating"><span class="stars">★★★★★</span> 5.0</div>
+                                <button class="btn btn-primary btn-full">View Review</button>
+                            </div>
+                        </div>
+                        <div class="movie-card">
+                            <img src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Movie Posters" class="movie-img">
+                            <div class="movie-info">
+                                <h3 class="movie-title">Movie Posters</h3>
+                                <div class="movie-rating"><span class="stars">★★★★☆</span> 4.0</div>
+                                <button class="btn btn-primary btn-full">View Review</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide-section" id="movies">
+                <div class="container">
+                    <h2 style="margin-bottom: 1.5rem;">Movies Collection</h2>
+                    <div class="filters">
+                        <button class="filter-btn active">All</button>
+                        <button class="filter-btn">Action</button>
+                        <button class="filter-btn">Drama</button>
+                        <button class="filter-btn">Horror</button>
+                        <button class="filter-btn">Comedy</button>
+                        <button class="filter-btn">Thriller</button>
+                    </div>
+
+                    <div class="movie-grid">
+                        <div class="movie-card">
+                            <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Movie" class="movie-img">
+                            <div class="movie-info">
+                                <h3 class="movie-title">The Walking Dead</h3>
+                                <div class="movie-rating"><span class="stars">★★★★★</span> 5.0</div>
+                                <button class="btn btn-outline btn-full" onclick="openModal('calc-modal')">Calculate Rating</button>
+                            </div>
+                        </div>
+                        <div class="movie-card">
+                            <img src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Movie" class="movie-img">
+                            <div class="movie-info">
+                                <h3 class="movie-title">Classic Collection</h3>
+                                <div class="movie-rating"><span class="stars">★★★★★</span> 5.0</div>
+                                <button class="btn btn-outline btn-full" onclick="openModal('calc-modal')">Calculate Rating</button>
+                            </div>
+                        </div>
+                        <div class="movie-card">
+                            <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Movie" class="movie-img">
+                            <div class="movie-info">
+                                <h3 class="movie-title">Cinema Night</h3>
+                                <div class="movie-rating"><span class="stars">★★★★★</span> 5.0</div>
+                                <button class="btn btn-outline btn-full" onclick="openModal('calc-modal')">Calculate Rating</button>
+                            </div>
+                        </div>
+                        <div class="movie-card">
+                            <img src="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Movie" class="movie-img">
+                            <div class="movie-info">
+                                <h3 class="movie-title">Movie Marathon</h3>
+                                <div class="movie-rating"><span class="stars">★★★★★</span> 5.0</div>
+                                <button class="btn btn-outline btn-full" onclick="openModal('calc-modal')">Calculate Rating</button>
+                            </div>
+                        </div>
+                        <div class="movie-card">
+                            <img src="https://images.unsplash.com/photo-1608178398319-48f814d0750c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Movie" class="movie-img">
+                            <div class="movie-info">
+                                <h3 class="movie-title">Retro Cinema</h3>
+                                <div class="movie-rating"><span class="stars">★★★☆☆</span> 3.0</div>
+                                <button class="btn btn-outline btn-full" onclick="openModal('calc-modal')">Calculate Rating</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide-section" id="reviews">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>User Reviews</h2>
+                        <button class="btn btn-primary" onclick="openModal('review-modal')">Submit Review</button>
+                    </div>
+
+                    <div class="review-list">
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div>
+                                    <div class="review-author">Alex Thompson</div>
+                                    <div class="review-movie">The Walking Dead</div>
+                                </div>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                            <p class="review-text">Absolutely phenomenal! The character development and storytelling are top-notch. Every episode keeps you on the edge of your seat. The cinematography is stunning and the soundtrack perfectly complements the intense atmosphere.</p>
+                            <div class="review-footer">
+                                <span>2026-04-20</span>
+                                <button class="btn btn-outline btn-small">Show Review</button>
+                            </div>
+                        </div>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div>
+                                    <div class="review-author">Sarah Martinez</div>
+                                    <div class="review-movie">Capitol Cinema</div>
+                                </div>
+                                <div class="stars">★★★★☆</div>
+                            </div>
+                            <p class="review-text">A masterpiece of modern cinema. The director's vision shines through in every frame. While some pacing issues in the middle act, the emotional payoff is worth it. Great performances from the entire cast.</p>
+                            <div class="review-footer">
+                                <span>2026-04-18</span>
+                                <button class="btn btn-outline btn-small">Show Review</button>
+                            </div>
+                        </div>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div>
+                                    <div class="review-author">James Wilson</div>
+                                    <div class="review-movie">Classic Collection</div>
+                                </div>
+                                <div class="stars">★★★★★</div>
+                            </div>
+                            <p class="review-text">One of the best films I've seen this year. The action sequences are breathtaking and the story is gripping from start to finish. A must-watch for any cinema enthusiast!</p>
+                            <div class="review-footer">
+                                <span>2026-04-15</span>
+                                <button class="btn btn-outline btn-small">Show Review</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="slide-section" id="contact">
+                <div class="container" style="text-align: center; padding-top: 10vh;">
+                    <h2>Contact Us</h2>
+                    <p style="color: var(--text-secondary); margin-top: 1rem;">Get in touch for business inquiries or support.</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="review-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('review-modal')">&times;</button>
+            <h3 class="modal-title">Submit Your Review</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Your Name</label>
+                <input type="text" class="form-control" placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Movie Name</label>
+                <input type="text" class="form-control" placeholder="Select a movie...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Your Rating</label>
+                <div class="interactive-stars" style="color: var(--star-color);">
+                    <span>★</span><span>★</span><span>★</span><span>★</span><span style="color: var(--border-color);">★</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Your Review</label>
+                <textarea class="form-control" placeholder="Share your thoughts about the movie..."></textarea>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="closeModal('review-modal')">Submit Review</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="calc-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('calc-modal')">&times;</button>
+            <h3 class="modal-title">Calculate Rating</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Cinema Night</p>
+            
+            <div class="rating-row">
+                <span class="form-label" style="margin: 0;">Story & Plot</span>
+                <div class="interactive-stars">★ ★ ★ ★ ☆</div>
+            </div>
+            <div class="rating-row">
+                <span class="form-label" style="margin: 0;">Acting Performance</span>
+                <div class="interactive-stars">★ ★ ★ ★ ★</div>
+            </div>
+            <div class="rating-row">
+                <span class="form-label" style="margin: 0;">Visuals & Cinematography</span>
+                <div class="interactive-stars">★ ★ ★ ★ ☆</div>
+            </div>
+            <div class="rating-row">
+                <span class="form-label" style="margin: 0;">Sound & Music</span>
+                <div class="interactive-stars">★ ★ ★ ★ ☆</div>
+            </div>
+
+            <button class="btn btn-primary btn-full" style="margin-top: 1.5rem;">Calculate Rating</button>
+
+            <div class="final-rating">
+                <span class="stars">★</span>
+                <h2>4.3 <span>/ 5.0</span></h2>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Single Page Application (SPA) Slider Logic ---
+        const sections = ['home', 'movies', 'reviews', 'contact'];
+        const slider = document.getElementById('slider');
+        const navLinks = document.querySelectorAll('nav a');
+
+        function goToSlide(targetId) {
+            // Find index of target
+            const index = sections.indexOf(targetId);
+            if (index === -1) return;
+
+            // Move the slider
+            slider.style.transform = `translateX(-${index * 100}vw)`;
+
+            // Update Active Class on Nav
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-target') === targetId) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Add Click Listeners to Nav Links
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = link.getAttribute('data-target');
+                goToSlide(target);
+            });
+        });
+
+        // --- Filter Button Interactivity (Visual only for prototype) ---
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // --- Modal Logic ---
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // prevent scrolling behind modal
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+            document.body.style.overflow = 'hidden'; // Restore SPA lock
+        }
+
+        // Close modal when clicking outside the content box
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

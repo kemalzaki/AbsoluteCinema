@@ -1,4 +1,4 @@
-package com.cinereview.model;
+package com.oop.absolutecinema.entity;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,8 +8,8 @@ public class SerialTVTest {
     @Test
     void testSetJumlahEpisodeValid() {
         SerialTV serial = new SerialTV();
-        serial.setJumlahEpisode(24);
-        assertEquals(24, serial.getJumlahEpisode());
+        serial.setTotalEpisode(24);
+        assertEquals(24, serial.getTotalEpisode());
     }
 
     @Test

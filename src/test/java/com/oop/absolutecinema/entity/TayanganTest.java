@@ -1,4 +1,4 @@
-package com.cinereview.model;
+package com.oop.absolutecinema.entity;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

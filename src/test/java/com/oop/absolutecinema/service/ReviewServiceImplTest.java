@@ -42,9 +42,9 @@ class ReviewServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        mockUser = new User();
-        
-        mockTayangan = new Film("Test Film", "Sinopsis", 2024);
+        mockUser = new User("testuser", "password123", "MEMBER");
+
+        mockTayangan = new Film("Test Film", "Sinopsis", 2024, 120, "Drama", "Test Director");
         
         requestDto = new ReviewDTO.Request();
         requestDto.setUserId(1L);

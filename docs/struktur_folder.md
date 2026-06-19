@@ -18,6 +18,7 @@ AbsoluteCinema/
 │   │       └── templates/           # File HTML/Thymeleaf buat tampilan web
 │   └── test/
 │       └── java/com/oop/absolutecinema/
+│           ├── entity/ 
 │           ├── controller/          # Testing buat endpoint
 │           └── service/             # Testing buat logika bisnis (Unit Test)
 ├── .gitignore               # PENTING: Biar file sampah/lokal nggak ikut ke-push

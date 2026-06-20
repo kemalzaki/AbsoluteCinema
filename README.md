@@ -121,7 +121,6 @@ Tim dibagi menjadi 3 sub-tim utama: Backend Core, API & Integration, serta Suppo
 * **Orang 10:** UI Developer (Form & Auth) - Membuat halaman form review dan visual login/register.
 * **Orang 11:** Quality Assurance - Membuat Unit Testing menggunakan JUnit/Mockito.
 * **Orang 12:** Project Manager - Mengatur Git, dokumentasi Swagger, dan menyusun materi presentasi.
-````</Configuration></RestController></RestController></Service></Service></DTO></DTO></DTO>
 
 ---
 ## 📚 API Documentation

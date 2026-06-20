@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- Shared header + nav fragment. Include with:
+     <header th:replace="~{fragments/header :: header}"></header> -->
+<body>
+
+<header th:fragment="header">
+    <a th:href="@{/}" class="logo">
+        <span>AbsoluteCinema</span> <span class="text-primary">Reviews</span>
+    </a>
+    <nav>
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/katalog}">Katalog</a>
+
+        <!-- Shown only when logged in -->
+        <a sec:authorize="isAuthenticated()"
+           th:href="@{/logout}"
+           onclick="return confirm('Logout sekarang?');">
+            Logout
+        </a>
+
+        <!-- Shown only when anonymous (not logged in) -->
+        <a sec:authorize="isAnonymous()" th:href="@{/login}">Login</a>
+        <a sec:authorize="isAnonymous()" th:href="@{/register}">Register</a>
+    </nav>
+</header>
+
+</body>
+</html>

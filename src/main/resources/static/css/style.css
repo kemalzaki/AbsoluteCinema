@@ -1,0 +1,503 @@
+/* ============================================================
+   AbsoluteCinema — Global Stylesheet
+   Extracted from the original mockup; SPA slider system removed
+   in favour of a standard multi-page Thymeleaf architecture.
+   ============================================================ */
+
+/* --- CSS VARIABLES & RESETS --- */
+:root {
+    --primary-color: #ff002b; /* Vibrant red from design */
+    --primary-hover: #cc0022;
+    --bg-base: #0a0a0a;
+    --bg-surface: #141414;
+    --bg-elevated: #242424;
+    --text-primary: #ffffff;
+    --text-secondary: #a3a3a3;
+    --border-color: #333333;
+    --star-color: #f5c518;
+    --nav-height: 80px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    /* Normal vertical scroll — multi-page layout */
+}
+
+button, a {
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+/* --- HEADER NAVIGATION --- */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--nav-height);
+    background-color: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5%;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.logo .text-primary {
+    color: var(--primary-color);
+}
+
+nav {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+nav a {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    position: relative;
+}
+
+nav a:hover, nav a.active {
+    color: var(--text-primary);
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+nav a.active::after, nav a:hover::after {
+    width: 100%;
+}
+
+/* --- LAYOUT --- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+/* Page wrapper so content isn't hidden behind the fixed header */
+.page {
+    padding-top: var(--nav-height);
+    padding-bottom: 4rem;
+    min-height: 100vh;
+}
+
+/* --- HERO SECTION --- */
+.hero {
+    position: relative;
+    height: 50vh;
+    min-height: 340px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 3rem;
+    background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.hero-content {
+    padding: 0 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.hero h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.hero h1 .text-primary { color: var(--primary-color); }
+.hero p {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.btn-group { display: flex; gap: 1rem; }
+
+/* --- BUTTONS --- */
+.btn {
+    display: inline-block;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 0, 43, 0.4);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--text-secondary);
+    color: var(--text-primary);
+}
+.btn-outline:hover {
+    border-color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* --- MOVIE GRID & CARDS --- */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.movie-card {
+    background-color: var(--bg-surface);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+}
+
+.movie-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+    border-color: #555;
+}
+
+.movie-img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--border-color);
+    display: block;
+}
+
+.movie-info {
+    padding: 1.2rem;
+}
+
+.movie-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.stars { color: var(--star-color); letter-spacing: 2px; }
+
+.btn-full {
+    width: 100%;
+    display: block;
+}
+
+/* --- FILTERS (Catalog) --- */
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.filter-btn:hover { background-color: var(--bg-elevated); color: white; }
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* --- BADGE (FILM / SERIAL TV) --- */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.badge-film {
+    background-color: rgba(255, 0, 43, 0.15);
+    color: var(--primary-color);
+    border: 1px solid rgba(255, 0, 43, 0.4);
+}
+.badge-serial {
+    background-color: rgba(245, 197, 24, 0.15);
+    color: var(--star-color);
+    border: 1px solid rgba(245, 197, 24, 0.4);
+}
+
+/* --- DETAIL PAGE --- */
+.detail-header {
+    margin-bottom: 2rem;
+}
+.detail-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+.detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+}
+.detail-meta .stars { font-size: 1.2rem; }
+
+.detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+}
+.detail-poster {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.detail-info p { margin-bottom: 0.75rem; line-height: 1.6; }
+.detail-info .label {
+    color: var(--text-secondary);
+    display: inline-block;
+    min-width: 120px;
+}
+.detail-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* --- REVIEWS LIST --- */
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.review-item {
+    background-color: var(--bg-surface);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: border-color 0.3s;
+}
+.review-item:hover { border-color: #555; }
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.review-author { font-weight: 600; font-size: 1.1rem; }
+.review-movie { color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;}
+.review-text { color: #cccccc; line-height: 1.6; margin-bottom: 1rem; }
+
+.review-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.btn-small { padding: 6px 12px; font-size: 0.85rem; }
+
+.empty-state {
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 2rem;
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+}
+
+/* --- MODALS --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 2000;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active { opacity: 1; visibility: visible; }
+
+.modal-content {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content { transform: scale(1); }
+
+.modal-close {
+    position: absolute;
+    top: 1rem; right: 1.5rem;
+    background: none; border: none; color: var(--text-secondary);
+    font-size: 1.5rem; cursor: pointer;
+}
+.modal-close:hover { color: white; }
+
+.modal-title { margin-bottom: 1.5rem; font-size: 1.5rem; }
+
+/* --- FORM CONTROLS --- */
+.form-group { margin-bottom: 1.2rem; }
+.form-label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary); }
+.form-control {
+    width: 100%; padding: 10px;
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: 6px; color: white;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+.form-control:focus { outline: none; border-color: var(--primary-color); }
+textarea.form-control { resize: vertical; min-height: 100px; }
+
+/* --- AUTH PAGES (login / register) --- */
+.auth-wrap {
+    max-width: 420px;
+    margin: 6vh auto;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2.5rem;
+}
+.auth-wrap h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+.auth-wrap .auth-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+.auth-footer a { color: var(--primary-color); font-weight: 600; }
+.auth-footer a:hover { text-decoration: underline; }
+
+/* --- ALERTS (flash messages) --- */
+.alert {
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+}
+.alert-error {
+    background-color: rgba(255, 0, 43, 0.1);
+    border-color: rgba(255, 0, 43, 0.4);
+    color: #ff6680;
+}
+.alert-success {
+    background-color: rgba(40, 200, 100, 0.1);
+    border-color: rgba(40, 200, 100, 0.4);
+    color: #66ff99;
+}
+.alert-info {
+    background-color: rgba(245, 197, 24, 0.1);
+    border-color: rgba(245, 197, 24, 0.4);
+    color: var(--star-color);
+}
+
+/* --- FOOTER --- */
+.footer {
+    border-top: 1px solid var(--border-color);
+    padding: 2rem 5%;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* --- RESPONSIVENESS --- */
+@media (max-width: 768px) {
+    .hero h1 { font-size: 2.5rem; }
+    .hero p { font-size: 1.1rem; }
+    header { padding: 0 4%; }
+    nav { gap: 1rem; }
+    .logo { font-size: 1.3rem; }
+    .detail-layout { grid-template-columns: 1fr; }
+    .movie-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
+    .movie-img { height: 240px; }
+}

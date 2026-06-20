@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog — AbsoluteCinema</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <main class="page container">
+        <h2 style="margin-bottom: 1.5rem;">Movies Collection</h2>
+
+        <!-- Filter bar: All / Film / Serial TV (functional) -->
+        <div class="filters">
+            <a class="filter-btn" th:href="@{/katalog}"
+               th:classappend="${activeType == 'ALL'} ? 'active' : ''">All</a>
+            <a class="filter-btn" th:href="@{/katalog(type='FILM')}"
+               th:classappend="${activeType == 'FILM'} ? 'active' : ''">Film</a>
+            <a class="filter-btn" th:href="@{/katalog(type='SERIAL_TV')}"
+               th:classappend="${activeType == 'SERIAL_TV'} ? 'active' : ''">Serial TV</a>
+            <!-- Genre filters: visual placeholder (no genre index yet) -->
+            <!-- <a class="filter-btn" th:href="@{/katalog}">Action</a> -->
+        </div>
+
+        <div class="movie-grid" th:if="${!tayangans.isEmpty()}">
+            <a class="movie-card" th:each="t : ${tayangans}" th:href="@{/tayangan/{id}(id=${t.id})}">
+                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                     th:alt="${t.judul}" class="movie-img">
+                <div class="movie-info">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                        <span class="badge badge-film" th:if="${t instanceof T(com.oop.absolutecinema.entity.Film)}">Film</span>
+                        <span class="badge badge-serial" th:if="${t instanceof T(com.oop.absolutecinema.entity.SerialTV)}">Serial TV</span>
+                    </div>
+                    <h3 class="movie-title" th:text="${t.judul}">Title</h3>
+                    <div class="movie-rating">
+                        <span class="stars">★★★★★</span>
+                        <span th:text="${#numbers.formatDecimal(t.hitungRatingRataRata(), 1, 1)}">0.0</span>
+                    </div>
+                    <span class="btn btn-outline btn-full">View Details</span>
+                </div>
+            </a>
+        </div>
+
+        <p class="empty-state" th:if="${tayangans.isEmpty()}">
+            Tidak ada tayangan untuk kategori ini.
+        </p>
+    </main>
+
+</body>
+</html>

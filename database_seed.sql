@@ -75,10 +75,14 @@ CREATE TABLE IF NOT EXISTS reviews (
 -- ------------------------------------------------------------
 
 -- 2.1 Users — role must be ADMIN or MEMBER (per User entity validator)
+-- Passwords are stored as BCrypt hashes so Spring Security form login
+-- (BCryptPasswordEncoder.matches) works out of the box.
+--   johndoe / janedoe -> plaintext "password123"
+--   admin             -> plaintext "admin123"
 INSERT INTO users (username, password, role) VALUES
-    ('johndoe', 'password123', 'MEMBER'),
-    ('janedoe', 'password123', 'MEMBER'),
-    ('admin',   'admin123',    'ADMIN');
+    ('johndoe', '$2b$12$0iq1D7FIRNEayPUJD5zf5OXVRehh.ImRP9cWpcV2ZgHUTOOCLED6e', 'MEMBER'),
+    ('janedoe', '$2b$12$0iq1D7FIRNEayPUJD5zf5OXVRehh.ImRP9cWpcV2ZgHUTOOCLED6e', 'MEMBER'),
+    ('admin',   '$2b$12$YgsHylDYsdQ7UB5lLN3/f.y3IzeWOvxG/v4TN4vBZmplkR84hTaH2',  'ADMIN');
 
 -- 2.2 Tayangan (parent rows) — IDs auto-generate as 1, 2, 3
 INSERT INTO tayangan (judul, sinopsis, tahun_rilis, total_skor, jumlah_reviewer) VALUES

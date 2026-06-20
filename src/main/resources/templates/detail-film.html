@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${tayangan.judul} + ' — AbsoluteCinema'">Detail</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <main class="page container">
+
+        <div class="detail-header">
+            <h1 th:text="${tayangan.judul}">Title</h1>
+            <div class="detail-meta">
+                <span class="badge badge-film" th:if="${jenis == 'FILM'}">Film</span>
+                <span class="badge badge-serial" th:if="${jenis == 'SERIAL_TV'}">Serial TV</span>
+                <span><span class="stars">★</span>
+                    <span th:text="${#numbers.formatDecimal(tayangan.hitungRatingRataRata(), 1, 1)}">0.0</span>
+                    (<span th:text="${tayangan.jumlahReviewer}">0</span> reviewer)
+                </span>
+                <span th:text="${tayangan.tahunRilis}">2024</span>
+            </div>
+        </div>
+
+        <div class="detail-layout">
+            <div>
+                <img class="detail-poster"
+                     src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                     th:alt="${tayangan.judul}">
+            </div>
+            <div class="detail-info">
+                <!-- Film-specific fields -->
+                <div th:if="${jenis == 'FILM'}">
+                    <p><span class="label">Durasi</span>
+                        <span th:text="${film.durasiMenit} + ' menit'">120 menit</span></p>
+                    <p><span class="label">Genre</span>
+                        <span th:text="${film.genre != null ? film.genre : '-'}">Drama</span></p>
+                    <p><span class="label">Sutradara</span>
+                        <span th:text="${film.sutradara != null ? film.sutradara : '-'}">Director</span></p>
+                </div>
+
+                <!-- Serial TV-specific fields -->
+                <div th:if="${jenis == 'SERIAL_TV'}">
+                    <p><span class="label">Jumlah Musim</span>
+                        <span th:text="${serialTv.jumlahMusim}">3</span></p>
+                    <p><span class="label">Total Episode</span>
+                        <span th:text="${serialTv.totalEpisode}">30</span></p>
+                    <p><span class="label">Jaringan TV</span>
+                        <span th:text="${serialTv.jaringanTV != null ? serialTv.jaringanTV : '-'}">Netflix</span></p>
+                    <p><span class="label">Status</span>
+                        <span th:text="${serialTv.masihBerjalan ? 'Masih Berjalan' : 'Tamat'}">Tamat</span></p>
+                </div>
+
+                <h3 class="section-title" style="margin-top:1.5rem;">Sinopsis</h3>
+                <p th:text="${tayangan.sinopsis != null ? tayangan.sinopsis : 'Sinopsis belum tersedia.'}"
+                   style="color:#cccccc; line-height:1.6;">
+                    Sinopsis...
+                </p>
+
+                <div class="detail-actions">
+                    <!-- Only visible to logged-in users -->
+                    <a class="btn btn-primary" sec:authorize="isAuthenticated()"
+                       th:href="@{/tayangan/{id}/ulas(id=${tayangan.id})}">Tulis Ulasan</a>
+                    <a class="btn btn-outline" sec:authorize="isAnonymous()"
+                       th:href="@{/login}">Login untuk Membuat Ulasan</a>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="section-title">Ulasan Pengguna</h3>
+        <div class="review-list" th:if="${!reviews.isEmpty()}">
+            <div class="review-item" th:each="r : ${reviews}">
+                <div class="review-header">
+                    <div>
+                        <div class="review-author" th:text="${r.user.username}">Author</div>
+                    </div>
+                    <div class="stars" th:text="${'★'.repeat(r.skor)}">★★★★★</div>
+                </div>
+                <p class="review-text" th:text="${r.teks}">Review text...</p>
+            </div>
+        </div>
+        <p class="empty-state" th:if="${reviews.isEmpty()}">
+            Belum ada ulasan. Jadilah yang pertama!
+        </p>
+
+        <!-- Calculate Rating modal (visual, kept from mockup) -->
+        <div class="modal-overlay" id="calc-modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeModal('calc-modal')">&times;</button>
+                <h3 class="modal-title">Calculate Rating</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" th:text="${tayangan.judul}">Title</p>
+
+                <div class="rating-row">
+                    <span class="form-label" style="margin: 0;">Story &amp; Plot</span>
+                    <div class="interactive-stars">★ ★ ★ ★ ☆</div>
+                </div>
+                <div class="rating-row">
+                    <span class="form-label" style="margin: 0;">Acting Performance</span>
+                    <div class="interactive-stars">★ ★ ★ ★ ★</div>
+                </div>
+                <div class="rating-row">
+                    <span class="form-label" style="margin: 0;">Visuals &amp; Cinematography</span>
+                    <div class="interactive-stars">★ ★ ★ ★ ☆</div>
+                </div>
+                <div class="rating-row">
+                    <span class="form-label" style="margin: 0;">Sound &amp; Music</span>
+                    <div class="interactive-stars">★ ★ ★ ★ ☆</div>
+                </div>
+
+                <button class="btn btn-primary btn-full" style="margin-top: 1.5rem;">Calculate Rating</button>
+
+                <div class="final-rating">
+                    <span class="stars">★</span>
+                    <h2>4.3 <span>/ 5.0</span></h2>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        document.querySelectorAll('.modal-overlay').forEach(o => {
+            o.addEventListener('click', e => { if (e.target === o) o.classList.remove('active'); });
+        });
+    </script>
+
+</body>
+</html>

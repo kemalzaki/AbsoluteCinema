@@ -65,6 +65,12 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+        <!-- Thymeleaf Spring Security dialect (sec:authorize, sec:authentication) -->
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+        </dependency>
+
         <!-- OpenAPI (Swagger) -->
         <dependency>
             <groupId>org.springdoc</groupId>

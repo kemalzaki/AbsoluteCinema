@@ -2,6 +2,7 @@ package com.oop.absolutecinema.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,9 +23,26 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+                // Auth API (register/login) & Swagger stay as before
                 .requestMatchers("/api/auth/**").permitAll()
+
+                // Public pages
                 .requestMatchers("/", "/katalog", "/katalog/**").permitAll()
+                .requestMatchers("/login", "/register").permitAll()
+
+                // Static resources
+                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+
+                // Review form page REQUIRES login (currentUserId needed in controller)
+                .requestMatchers(HttpMethod.GET, "/tayangan/*/ulas").authenticated()
+
+                // Public detail pages (GET /tayangan/{id})
+                .requestMatchers(HttpMethod.GET, "/tayangan/**").permitAll()
+
+                // Admin area
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                // Everything else (POST /api/reviews, POST /register handled above, etc.) needs login
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -33,7 +51,7 @@ public class SecurityConfig {
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/login")
+                .logoutSuccessUrl("/login?logout")
                 .permitAll()
             );
 

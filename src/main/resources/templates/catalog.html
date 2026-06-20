@@ -28,7 +28,7 @@
 
         <div class="movie-grid" th:if="${!tayangans.isEmpty()}">
             <a class="movie-card" th:each="t : ${tayangans}" th:href="@{/tayangan/{id}(id=${t.id})}">
-                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                <img th:src="${not #strings.isEmpty(t.gambarUrl) ? t.gambarUrl : '/images/poster-placeholder.svg'}"
                      th:alt="${t.judul}" class="movie-img">
                 <div class="movie-info">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">

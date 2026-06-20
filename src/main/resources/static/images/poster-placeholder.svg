@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600">
+    <rect width="400" height="600" fill="#242424"/>
+    <rect x="20" y="20" width="360" height="560" fill="none" stroke="#3a3a3a" stroke-width="2" rx="8"/>
+    <g fill="#666" font-family="'Segoe UI', Arial, sans-serif" text-anchor="middle">
+        <text x="200" y="280" font-size="26" font-weight="700">
+            <tspan fill="#ff002b">Absolute</tspan><tspan fill="#ffffff">Cinema</tspan>
+        </text>
+        <text x="200" y="320" font-size="15" fill="#555">No Poster Available</text>
+    </g>
+</svg>

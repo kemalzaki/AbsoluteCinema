@@ -14,6 +14,10 @@
     <main class="page container">
         <div style="max-width: 640px; margin: 0 auto;">
 
+            <div style="margin-bottom: 1rem;">
+                <a th:href="@{/tayangan/{id}(id=${tayangan.id})}" class="btn btn-outline btn-small">&larr; Kembali ke Detail</a>
+            </div>
+
             <div class="detail-header">
                 <h1>Tulis Ulasan</h1>
                 <p class="auth-subtitle" style="margin-top:0.5rem;">
@@ -27,9 +31,16 @@
 
             <form id="review-form">
                 <div class="form-group">
-                    <label class="form-label" for="skor">Rating (1–5)</label>
-                    <input type="number" id="skor" name="skor"
-                           class="form-control" min="1" max="5" value="5" required>
+                    <label class="form-label">Rating (1–5)</label>
+                    <div class="interactive-stars" id="star-input" role="radiogroup" aria-label="Rating 1 sampai 5">
+                        <span data-value="1">★</span>
+                        <span data-value="2">★</span>
+                        <span data-value="3">★</span>
+                        <span data-value="4">★</span>
+                        <span data-value="5">★</span>
+                    </div>
+                    <!-- Hidden field dikirim bersama submit; skor dipilih lewat bintang -->
+                    <input type="hidden" id="skor" name="skor" value="5">
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="teks">Ulasan</label>
@@ -38,7 +49,7 @@
                               placeholder="Bagikan pendapatmu tentang tayangan ini..."></textarea>
                 </div>
                 <div style="display:flex; gap:1rem;">
-                    <button type="submit" class="btn btn-primary">Kirim Ulasan</button>
+                    <button type="submit" id="submit-btn" class="btn btn-primary">Kirim Ulasan</button>
                     <a class="btn btn-outline" th:href="@{/tayangan/{id}(id=${tayangan.id})}">Batal</a>
                 </div>
             </form>
@@ -52,22 +63,49 @@
         const TAYANGAN_ID = /*[[${tayangan.id}]]*/ null;
         const DETAIL_URL = /*[[@{/tayangan/{id}(id=${tayangan.id})}]]*/ '/tayangan/' + TAYANGAN_ID;
 
+        // --- Star rating picker (1-5) ---
+        const stars = document.querySelectorAll('#star-input span');
+        const skorInput = document.getElementById('skor');
+        let selected = 5; // default 5 bintang
+
+        function paint(n) {
+            stars.forEach((s, i) => s.classList.toggle('active', i < n));
+        }
+
+        stars.forEach((s, i) => {
+            s.addEventListener('mouseenter', () => paint(i + 1));
+            s.addEventListener('click', () => {
+                selected = i + 1;
+                skorInput.value = selected;
+                paint(selected);
+            });
+        });
+        document.getElementById('star-input').addEventListener('mouseleave', () => paint(selected));
+        paint(selected);
+
+        // --- Submit handler (disable button + redirect with success flag) ---
         document.getElementById('review-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const alertBox = document.getElementById('review-alert');
-            const skor = document.getElementById('skor').value;
+            const submitBtn = document.getElementById('submit-btn');
             const teks = document.getElementById('teks').value;
 
-            if (!skor || !teks) {
+            alertBox.style.display = 'none';
+
+            if (!teks) {
                 alertBox.textContent = 'Tolong lengkapi semua field!';
                 alertBox.style.display = 'block';
                 return;
             }
 
+            // Kunci tombol supaya tidak bisa submit berkali-kali
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim...';
+
             const payload = {
                 userId: CURRENT_USER_ID,
                 tayanganId: TAYANGAN_ID,
-                skor: parseInt(skor, 10),
+                skor: parseInt(skorInput.value, 10),
                 teks: teks
             };
 
@@ -79,16 +117,21 @@
                 });
 
                 if (response.ok) {
-                    window.location.href = DETAIL_URL;
+                    // Kembali ke detail + tampilkan flash "berhasil"
+                    window.location.href = DETAIL_URL + '?reviewed';
                 } else {
                     const msg = await response.text();
                     alertBox.textContent = 'Gagal: ' + msg;
                     alertBox.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Kirim Ulasan';
                 }
             } catch (err) {
                 console.error('Error submitting review:', err);
                 alertBox.textContent = 'Terjadi kesalahan jaringan.';
                 alertBox.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Kirim Ulasan';
             }
         });
     </script>

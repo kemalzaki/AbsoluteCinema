@@ -34,6 +34,14 @@ public abstract class Tayangan implements Rateable {
     @Column(length = 1000)
     private String sinopsis;
 
+    /**
+     * URL gambar/poster tayangan. Disimpan sebagai string URL (bukan file)
+     * supaya persist di Railway — database saja yang menyimpan, tidak ada
+     * file di disk container (yang akan hilang saat redeploy).
+     */
+    @Column(length = 512)
+    private String gambarUrl;
+
     @Column(nullable = false)
     private int tahunRilis;
 
@@ -121,6 +129,14 @@ public abstract class Tayangan implements Rateable {
 
     public String getSinopsis() {
         return sinopsis;
+    }
+
+    public String getGambarUrl() {
+        return gambarUrl;
+    }
+
+    public void setGambarUrl(String gambarUrl) {
+        this.gambarUrl = gambarUrl;
     }
 
     public int getTahunRilis() {

@@ -111,7 +111,7 @@ Tim dibagi menjadi 3 sub-tim utama: Backend Core, API & Integration, serta Suppo
 * **Orang 4:** Repository Layer - Membuat semua antarmuka repository dan *custom query*.
 
 ### B. Sub-Tim Service & API (Logic & Controller)
-* **Oya (Orang 5):** Service Layer (Catalog Logic) - Membuat `TayanganService` beserta implementasinya untuk mengatur logika bisnis CRUD.
+* **Orang 5:** Service Layer (Catalog Logic) - Membuat `TayanganService` beserta implementasinya untuk mengatur logika bisnis CRUD.
 * **Orang 6:** Service Layer (Review Logic) - Membuat `ReviewService` untuk logika unggah ulasan dan pencegahan duplikasi.
 * **Orang 7:** Controller Layer - Membuat `TayanganController` dan `ReviewController` untuk REST API.
 * **Orang 8:** DTO & Security - Membuat Data Transfer Object dan mengonfigurasi Spring Security.
@@ -122,3 +122,12 @@ Tim dibagi menjadi 3 sub-tim utama: Backend Core, API & Integration, serta Suppo
 * **Orang 11:** Quality Assurance - Membuat Unit Testing menggunakan JUnit/Mockito.
 * **Orang 12:** Project Manager - Mengatur Git, dokumentasi Swagger, dan menyusun materi presentasi.
 ````</Configuration></RestController></RestController></Service></Service></DTO></DTO></DTO>
+
+---
+## 📚 API Documentation
+
+Swagger UI:
+http://localhost:8080/swagger-ui/index.html
+
+OpenAPI Specification:
+Lihat `openapi.yaml` di project root.

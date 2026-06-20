@@ -1,0 +1,275 @@
+openapi: 3.0.1
+info:
+  title: AbsoluteCinema API
+  description: API untuk aplikasi AbsoluteCinema
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Development Server
+- url:
+  description: Production Server
+paths:
+  /api/tayangan:
+    get:
+      tags:
+      - Tayangan
+      summary: Dapatkan semua tayangan (film dan serial TV)
+      operationId: tampilkanKatalog
+      responses:
+        "200":
+          description: Daftar semua tayangan
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tayangan"
+    post:
+      tags:
+      - Tayangan
+      summary: Tambah tayangan baru (admin only)
+      operationId: tambahTayangan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tayangan"
+        required: true
+      responses:
+        "200":
+          description: Tayangan berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tayangan"
+        "403":
+          description: Akses ditolak (bukan admin)
+  /api/tayangan/{id}:
+    get:
+      tags:
+      - Tayangan
+      summary: Dapatkan detail tayangan berdasarkan ID
+      operationId: tampilkanDetail
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Detail tayangan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tayangan"
+        "404":
+          description: Tayangan tidak ditemukan
+    post:
+      tags:
+      - Tayangan
+      summary: Edit tayangan (admin only)
+      operationId: editTayangan
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tayangan"
+        required: true
+      responses:
+        "200":
+          description: Tayangan berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tayangan"
+        "403":
+          description: Akses ditolak (bukan admin)
+        "404":
+          description: Tayangan tidak ditemukan
+    delete:
+      tags:
+      - Tayangan
+      summary: Hapus tayangan (admin only)
+      operationId: hapusTayangan
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Tayangan berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: string
+        "403":
+          description: Akses ditolak (bukan admin)
+        "404":
+          description: Tayangan tidak ditemukan
+  /api/reviews:
+    post:
+      tags:
+      - Reviews
+      summary: Tambah review untuk tayangan
+      operationId: tambahReview
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Request"
+        required: true
+      responses:
+        "201":
+          description: Review berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Data review tidak valid
+        "500":
+          description: Kesalahan server
+  /api/auth/register:
+    post:
+      tags:
+      - Authentication
+      summary: Register pengguna baru
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "200":
+          description: Registrasi berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Username sudah terdaftar atau data tidak valid
+  /api/auth/login:
+    post:
+      tags:
+      - Authentication
+      summary: Login pengguna
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: Login berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Username atau password salah
+components:
+  schemas:
+    Tayangan:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        judul:
+          type: string
+          description: Judul tayangan
+        sinopsis:
+          type: string
+          description: Sinopsis atau deskripsi tayangan
+        gambarUrl:
+          type: string
+          description: URL gambar poster
+        tahunRilis:
+          type: integer
+          format: int32
+          description: Tahun rilis
+        totalSkor:
+          type: number
+          format: double
+          description: Total skor dari semua review
+        jumlahReviewer:
+          type: integer
+          format: int32
+          description: Jumlah pengguna yang review
+    Request:
+      required:
+      - skor
+      - tayanganId
+      - teks
+      - userId
+      type: object
+      properties:
+        skor:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 5
+          description: Rating dari 1-5
+        teks:
+          type: string
+          minLength: 0
+          maxLength: 1000
+          description: Teks review/komentar
+        userId:
+          type: integer
+          format: int64
+          description: ID pengguna yang membuat review
+        tayanganId:
+          type: integer
+          format: int64
+          description: ID tayangan yang di-review
+    RegisterRequest:
+      required:
+      - username
+      - password
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+          description: Username (3-20 karakter)
+        password:
+          type: string
+          minLength: 8
+          description: Password minimal 8 karakter
+    LoginRequest:
+      required:
+      - username
+      - password
+      type: object
+      properties:
+        username:
+          type: string
+          description: Username
+        password:
+          type: string
+          description: Password
+tags:
+  - name: Authentication
+    description: Endpoint untuk registrasi dan login
+  - name: Tayangan
+    description: Endpoint untuk mengelola film dan serial TV
+  - name: Reviews
+    description: Endpoint untuk menambahkan review

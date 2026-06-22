@@ -7,6 +7,8 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
+    private String email;
+    private boolean aktif;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,4 +92,9 @@ public class User {
     public List<Review> getReviews() {
         return reviews;
     }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public boolean isAktif() { return aktif; }
+    public void setAktif(boolean aktif) { this.aktif = aktif; }
 }

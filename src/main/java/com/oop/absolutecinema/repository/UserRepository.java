@@ -21,4 +21,6 @@ import java.util.List;
     // Mengecek apakah usernamse sudah terdaftar di database
     // untuk mencegah username duplikat saat proses REGISTRASI
     boolean existsByUsername(String username);
+    // Tambahan untuk fitur OTP
+    Optional<User> findByEmail(String email);
   }

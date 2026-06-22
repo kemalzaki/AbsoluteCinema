@@ -25,6 +25,9 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // =====================
+    // REGISTER
+    // =====================
     public UserDTO.Response register(UserDTO.RegisterRequest dto) {
 
         // Buat user baru dengan status belum aktif
@@ -45,9 +48,13 @@ public class AuthService {
         );
     }
 
+    // =====================
+    // LOGIN
+    // =====================
     public UserDTO.Response login(UserDTO.LoginRequest dto) {
+
         User user = userRepository.findByUsername(dto.getUsername())
-                .orElseThrow(() -> new RuntimeException("Username tidak ditemukan"));
+            .orElseThrow(() -> new RuntimeException("Username tidak ditemukan"));
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new RuntimeException("Password salah");
@@ -60,39 +67,54 @@ public class AuthService {
             "Login berhasil!"
         );
     }
-    // Verifikasi OTP setelah register
+
+    // =====================
+    // VERIFIKASI OTP
+    // =====================
     public String verifikasiOtp(String email, String otp) {
-    if (otpService.validateOtp(email, otp)) {
+
+        if (!otpService.validateOtp(email, otp)) {
+            throw new RuntimeException("Kode OTP salah atau sudah expired");
+        }
+
         User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("Email tidak ditemukan"));
+            .orElseThrow(() -> new RuntimeException("Email tidak ditemukan"));
+
         user.setAktif(true);
         userRepository.save(user);
+
         return "Akun berhasil diaktifkan, silakan login!";
     }
-    throw new RuntimeException("Kode OTP salah atau sudah expired");
-}
 
-// Lupa password — kirim OTP reset
-public String lupaPassword(String email) {
-     User user = userRepository.findByEmail(email)
-    .orElseThrow(() -> new RuntimeException("Email tidak ditemukan"));
-    if (user == null) {
-        throw new RuntimeException("Email tidak terdaftar");
-    }
-    String otp = otpService.generateOtp(email);
-    emailService.kirimOtp(email, otp);
-    return "OTP reset password telah dikirim ke " + email;
-}
+    // =====================
+    // LUPA PASSWORD
+    // =====================
+    public String lupaPassword(String email) {
 
-// Reset password setelah OTP valid
-public String resetPassword(String email, String otp, String passwordBaru) {
-    if (otpService.validateOtp(email, otp)) {
         User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("Email tidak ditemukan"));
+            .orElseThrow(() -> new RuntimeException("Email tidak terdaftar"));
+
+        String otp = otpService.generateOtp(email);
+        emailService.kirimOtp(email, otp);
+
+        return "OTP reset password telah dikirim ke " + email;
+    }
+
+    // =====================
+    // RESET PASSWORD
+    // =====================
+    public String resetPassword(String email, String otp, String passwordBaru) {
+
+        if (!otpService.validateOtp(email, otp)) {
+            throw new RuntimeException("Kode OTP salah atau sudah expired");
+        }
+
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Email tidak ditemukan"));
+
         user.setPassword(passwordEncoder.encode(passwordBaru));
         userRepository.save(user);
+
         return "Password berhasil direset!";
     }
-    throw new RuntimeException("Kode OTP salah atau sudah expired");
-} 
 }

@@ -33,4 +33,39 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    // POST /api/auth/verifikasi-otp
+@PostMapping("/verifikasi-otp")
+public ResponseEntity<?> verifikasiOtp(
+        @RequestParam String email,
+        @RequestParam String otp) {
+    try {
+        return ResponseEntity.ok(authService.verifikasiOtp(email, otp));
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+}
+
+// POST /api/auth/lupa-password
+@PostMapping("/lupa-password")
+public ResponseEntity<?> lupaPassword(@RequestParam String email) {
+    try {
+        return ResponseEntity.ok(authService.lupaPassword(email));
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+}
+
+// POST /api/auth/reset-password
+@PostMapping("/reset-password")
+public ResponseEntity<?> resetPassword(
+        @RequestParam String email,
+        @RequestParam String otp,
+        @RequestParam String passwordBaru) {
+    try {
+        return ResponseEntity.ok(authService.resetPassword(email, otp, passwordBaru));
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+}
 }

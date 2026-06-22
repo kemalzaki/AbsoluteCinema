@@ -13,7 +13,7 @@ public class OTPMailService {
 
     // Generate kode OTP 6 digit
     public String generateOtp(String email) {
-        String otp = String.valueOf(new Random().nextInt(999999) + 1000000);
+        String otp = String.valueOf(new Random().nextInt(900000) + 100000);// pastikan OTP 6 digit
         otpStorage.put(email, otp);
         return otp;
     }

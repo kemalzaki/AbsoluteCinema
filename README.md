@@ -7,7 +7,7 @@ Repositori ini merupakan backend service untuk aplikasi Absolute Cinema. Proyek 
 
 ## Fitur Utama
 * **Kalkulasi Rating Otomatis:** Perhitungan rata-rata skor tayangan secara real-time menggunakan prinsip enkapsulasi OOP saat ulasan baru masuk.
-* **Autentikasi & Keamanan:** Sistem login dan registrasi yang diamankan dengan Spring Security, *password hashing* (BCrypt), dan verifikasi akun berbasis Email OTP.
+* **Autentikasi & Keamanan:** Sistem login dan registrasi yang diamankan dengan Spring Security, password hashing (BCrypt), dan verifikasi akun berbasis Email OTP.
 * **Manajemen File (Local Storage):** Fitur unggah gambar dengan penamaan unik (UUID) untuk poster tayangan dan foto profil pengguna.
 * **Katalog Dinamis:** Pemisahan entitas antara Film dan Serial TV dengan properti dan detail yang spesifik untuk masing-masing jenis tayangan.
 
@@ -66,11 +66,16 @@ graph LR
 ---
 
 ## Class Diagram Komprehensif
-Diagram kelas ini telah disesuaikan untuk mencakup struktur lapisan (layer) arsitektur secara lengkap. Silakan buka tautan gambar di bawah ini untuk melihat detailnya:
+Diagram kelas ini telah disesuaikan untuk mencakup struktur lapisan (layer) arsitektur secara lengkap.
 
-* [Class Diagram Domain Model (Entity & DTO Layer)](docs/Domain%20Model.png)
-* [Class Diagram Business Model (Service & Repository Layer)](docs/Business%20Logic.png)
-* [Class Diagram API & Presentation (Controller & Security)](docs/API%20Presentation.png)
+**1. Domain Model (Entity & DTO Layer)**
+![Class Diagram Domain Model](docs/Domain%20Model.png)
+
+**2. Business Model (Service & Repository Layer)**
+![Class Diagram Business Model](docs/Business%20Logic.png)
+
+**3. API & Presentation (Controller & Security)**
+![Class Diagram API & Presentation](docs/API%20Presentation.png)
 
 ---
 

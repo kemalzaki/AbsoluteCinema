@@ -91,7 +91,7 @@ public class AuthService {
     // =====================
     public String lupaPassword(String email) {
 
-        User user = userRepository.findByEmail(email)
+        userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Email tidak terdaftar"));
 
         String otp = otpService.generateOtp(email);

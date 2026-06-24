@@ -14,6 +14,13 @@
     <main class="page container">
         <h2 style="margin-bottom: 1.5rem;">Movies Collection</h2>
 
+          <!-- Search Bar -->
+<div class="search-box">
+    <input type="text" id="searchInput"
+           placeholder="Cari film atau serial..."
+           onkeyup="searchMovies()">
+</div>
+          
         <!-- Filter bar: All / Film / Serial TV (functional) -->
         <div class="filters">
             <a class="filter-btn" th:href="@{/katalog}"
@@ -49,6 +56,21 @@
             Tidak ada tayangan untuk kategori ini.
         </p>
     </main>
+<script>
+function searchMovies() {
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let cards = document.querySelectorAll(".movie-card");
 
+    cards.forEach(card => {
+        let title = card.querySelector(".movie-title").textContent.toLowerCase();
+
+        if (title.includes(input)) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+</script>
 </body>
 </html>

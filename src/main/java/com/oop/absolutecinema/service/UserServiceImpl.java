@@ -17,11 +17,13 @@ public class UserServiceImpl implements UserService {
   @Transactional(readOnly = true)
   public UserDTO.Response getProfile(Long id) {
     // Cari user berdasarkan Long id
+    // Jika ID tidak ditemukan, sistem otomatis menghentikan proses dan melempar RuntimeException
     User user = userRepository.findById(id)
       .orElseThrow(() -> new RuntimeException(
         "User dengan ID " + id + " tidak ditemukan."
       ));
-    
+
+    // Kembalikan data yang berhasil diambil dalam bentuk UserDTO.Response
     return new UserDTO.Response(
       user.getId(),
       user.getUsername(),

@@ -1,0 +1,32 @@
+package com.oop.absolutecinema.service;
+
+import com.oop.absolutecinema.DTO.UserDTO;
+import com.oop.absolutecinema.entity.User;
+import com.oop.absolutecinema.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class UserServiceImpl implements UserService {
+  
+  @Autowired
+  private UserRepository userRepository;
+  
+  @Override
+  @Transactional(readOnly = true)
+  public UserDTO.Response getProfile(Long id) {
+    // Cari user berdasarkan Long id
+    User user = userRepository.findById(id)
+      .orElseThrow(() -> new RuntimeException(
+        "User dengan ID " + id + " tidak ditemukan."
+      ));
+    
+    return new UserDTO.Response(
+      user.getId(),
+      user.getUsername(),
+      user.getRole(),
+      "Profil berhasil dimuat."
+    );
+  }
+}

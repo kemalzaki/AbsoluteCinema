@@ -490,6 +490,33 @@ textarea.form-control { resize: vertical; min-height: 100px; }
     font-size: 0.85rem;
 }
 
+/* ===== SEARCH BAR KATALOG ===== */
+.search-box {
+    margin-bottom: 1.5rem;
+}
+
+.search-box input {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(255, 0, 43, 0.3);
+}
+
+.search-box input::placeholder {
+    color: var(--text-secondary);
+}
+
 /* --- RESPONSIVENESS --- */
 @media (max-width: 768px) {
     .hero h1 { font-size: 2.5rem; }

@@ -83,6 +83,7 @@ public class TayanganServiceImpl implements TayanganService {
         tayanganLama.setJudul(dataEdit.getJudul());
         tayanganLama.setSinopsis(dataEdit.getSinopsis());
         tayanganLama.setTahunRilis(dataEdit.getTahunRilis());
+        tayanganLama.setGambarUrl(dataEdit.getGambarUrl());
         
         // Update atribut spesifik dan simpan ke database
         if (tayanganLama instanceof Film && dataEdit instanceof Film) {

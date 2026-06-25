@@ -28,6 +28,16 @@
             Ulasan berhasil ditambahkan!
         </div>
 
+        <!-- Shown after a successful edit -->
+        <div class="alert alert-success" th:if="${param.edited}">
+            Perubahan tersimpan.
+        </div>
+
+        <!-- Shown when delete is blocked because reviews still reference the row -->
+        <div class="alert alert-error" th:if="${param.deleteBlocked}">
+            Tidak bisa menghapus tayangan yang masih memiliki ulasan.
+        </div>
+
         <div class="detail-header">
             <h1 th:text="${tayangan.judul}">Title</h1>
             <div class="detail-meta">
@@ -82,6 +92,17 @@
                        th:href="@{/tayangan/{id}/ulas(id=${tayangan.id})}">Tulis Ulasan</a>
                     <a class="btn btn-outline" sec:authorize="isAnonymous()"
                        th:href="@{/login}">Login untuk Membuat Ulasan</a>
+
+                    <!-- Admin-only Edit / Hapus -->
+                    <div sec:authorize="hasRole('ADMIN')" style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <a class="btn btn-outline btn-small"
+                           th:href="@{/admin/tayangan/{id}/edit(id=${tayangan.id})}">Edit</a>
+                        <form th:action="@{/admin/tayangan/{id}/delete(id=${tayangan.id})}" method="post"
+                              onsubmit="return confirm('Hapus tayangan ini? Tindakan tidak bisa dibatalkan.');"
+                              style="display:inline;">
+                            <button type="submit" class="btn btn-outline btn-small">Hapus</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

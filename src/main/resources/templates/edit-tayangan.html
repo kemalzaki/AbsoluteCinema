@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Tayangan — AbsoluteCinema</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="manifest" th:href="@{/manifest.json}">
+    <meta name="theme-color" content="#ff002b">
+    <link rel="icon" type="image/png" sizes="192x192" th:href="@{/images/icon-192.png}">
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/icon.svg}">
+    <link rel="apple-touch-icon" th:href="@{/images/icon-192.png}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <main class="page container">
+        <div style="margin-bottom: 1rem;">
+            <a th:href="@{/tayangan/{id}(id=${tayangan.id})}" class="btn btn-outline btn-small">&larr; Batal</a>
+        </div>
+
+        <h2 style="margin-bottom: 0.5rem;">Edit Tayangan</h2>
+        <p class="auth-subtitle" style="margin-bottom: 1.5rem;">
+            <span class="badge badge-film" th:if="${jenis == 'FILM'}">Film</span>
+            <span class="badge badge-serial" th:if="${jenis == 'SERIAL_TV'}">Serial TV</span>
+            <span th:text="${tayangan.judul}">Judul</span>
+        </p>
+
+        <!-- Error flash -->
+        <div class="alert alert-error" th:if="${param.error}" th:text="${param.error}">
+            Terjadi kesalahan.
+        </div>
+
+        <form th:action="@{/admin/tayangan/{id}(id=${tayangan.id})}" method="post">
+            <!-- Hidden jenis supaya controller tahu concrete type mana yang dibangun -->
+            <input type="hidden" name="jenis" th:value="${jenis}">
+
+            <div class="form-group">
+                <label class="form-label">Judul *</label>
+                <input type="text" name="judul" class="form-control"
+                       th:value="${tayangan.judul}" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Tahun Rilis *</label>
+                <input type="number" name="tahunRilis" class="form-control"
+                       min="1888" max="2100" th:value="${tayangan.tahunRilis}" required>
+            </div>
+
+            <!-- ===== Field khusus FILM ===== -->
+            <div th:if="${jenis == 'FILM'}">
+                <div class="form-group">
+                    <label class="form-label">Durasi (menit) *</label>
+                    <input type="number" name="durasiMenit" class="form-control"
+                           min="1" th:value="${film.durasiMenit}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Genre</label>
+                    <input type="text" name="genre" class="form-control"
+                           th:value="${film.genre}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sutradara</label>
+                    <input type="text" name="sutradara" class="form-control"
+                           th:value="${film.sutradara}">
+                </div>
+            </div>
+
+            <!-- ===== Field khusus SERIAL TV ===== -->
+            <div th:if="${jenis == 'SERIAL_TV'}">
+                <div class="form-group">
+                    <label class="form-label">Jumlah Musim *</label>
+                    <input type="number" name="jumlahMusim" class="form-control"
+                           min="1" th:value="${serialTv.jumlahMusim}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Episode *</label>
+                    <input type="number" name="totalEpisode" class="form-control"
+                           min="1" th:value="${serialTv.totalEpisode}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Jaringan TV</label>
+                    <input type="text" name="jaringanTV" class="form-control"
+                           th:value="${serialTv.jaringanTV}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <label style="display:flex; align-items:center; gap:0.5rem; color:var(--text-secondary);">
+                        <input type="checkbox" name="masihBerjalan" value="true"
+                               th:checked="${serialTv.masihBerjalan}">
+                        Masih berjalan (on-going)
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">URL Gambar</label>
+                <input type="url" name="gambarUrl" class="form-control"
+                       th:value="${tayangan.gambarUrl}"
+                       placeholder="https://... (kosongkan untuk placeholder)">
+                <label class="form-label" style="margin-top:0.5rem;">atau upload file:</label>
+                <input type="file" accept="image/*" onchange="uploadImage(this)">
+                <small class="upload-status" style="color: var(--text-secondary);"></small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Sinopsis</label>
+                <textarea name="sinopsis" class="form-control" maxlength="1000"
+                          th:text="${tayangan.sinopsis}"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            <a class="btn btn-outline" th:href="@{/tayangan/{id}(id=${tayangan.id})}">Batal</a>
+        </form>
+    </main>
+
+    <script>
+        // Upload file ke /api/upload/gambar (ImageKit) lalu isi field gambarUrl
+        // yang berada di form yang sama dengan input file yang dipilih.
+        async function uploadImage(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            const formGroup = input.closest('.form-group');
+            const urlField = formGroup.querySelector('input[name="gambarUrl"]');
+            const status = formGroup.querySelector('.upload-status');
+            if (!urlField || !status) return;
+
+            status.textContent = 'Mengunggah...';
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/api/upload/gambar', {
+                    method: 'POST',
+                    body: formData
+                });
+                const text = await res.text();
+                if (res.ok) {
+                    urlField.value = text;
+                    status.style.color = '#4caf50';
+                    status.textContent = 'Gambar terunggah, URL terisi otomatis.';
+                } else {
+                    status.style.color = '#ff002b';
+                    status.textContent = 'Gagal: ' + text;
+                }
+            } catch (err) {
+                status.style.color = '#ff002b';
+                status.textContent = 'Terjadi kesalahan jaringan: ' + err.message;
+            }
+        }
+    </script>
+
+</body>
+</html>

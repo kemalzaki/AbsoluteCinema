@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AuthService {
 
@@ -30,10 +32,28 @@ public class AuthService {
     // =====================
     public UserDTO.Response register(UserDTO.RegisterRequest dto) {
 
-        // Buat user baru dengan status belum aktif
-        User user = new User(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), "MEMBER");
-        user.setEmail(dto.getEmail());
-        user.setAktif(false); // belum aktif sampai OTP diverifikasi
+        // Cek apakah email sudah dipakai akun existing. Kalau ada akun
+        // belum terverifikasi (aktif=false) dari percobaan register sebelumnya
+        // yang gagal kirim OTP / ditinggal user, kita reuse row-nya supaya
+        // UNIQUE constraint di kolom email tidak menghalangi retry. Username
+        // dan password ditimpa dari permintaan baru, lalu OTP di-regenerate.
+        Optional<User> existing = userRepository.findByEmail(dto.getEmail());
+
+        User user;
+        if (existing.isPresent()) {
+            User u = existing.get();
+            if (u.isAktif()) {
+                throw new RuntimeException(
+                    "Email sudah terdaftar dan terverifikasi. Silakan login.");
+            }
+            u.setUsername(dto.getUsername());
+            u.setPassword(passwordEncoder.encode(dto.getPassword()));
+            user = u;
+        } else {
+            user = new User(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), "MEMBER");
+            user.setEmail(dto.getEmail());
+            user.setAktif(false); // belum aktif sampai OTP diverifikasi
+        }
         userRepository.save(user);
 
         // Generate OTP dan kirim ke email

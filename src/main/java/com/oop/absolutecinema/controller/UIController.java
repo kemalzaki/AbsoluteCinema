@@ -109,14 +109,21 @@ public class UIController {
     public String register(@RequestParam String username,
                            @RequestParam String password,
                            @RequestParam String email) {
-        UserDTO.RegisterRequest req = new UserDTO.RegisterRequest();
-        req.setUsername(username);
-        req.setPassword(password);
-        req.setEmail(email);
-        authService.register(req);
-        // AuthService.register() sets aktif=false and emails an OTP;
-        // send the user straight to the OTP page so they can verify.
-        return "redirect:/verify-otp?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8);
+        try {
+            UserDTO.RegisterRequest req = new UserDTO.RegisterRequest();
+            req.setUsername(username);
+            req.setPassword(password);
+            req.setEmail(email);
+            authService.register(req);
+            // AuthService.register() sets aktif=false and emails an OTP;
+            // send the user straight to the OTP page so they can verify.
+            return "redirect:/verify-otp?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8);
+        } catch (RuntimeException e) {
+            // Includes: email already verified, username collision (UNIQUE),
+            // SMTP send failure — surface as a friendly flash on /register.
+            return "redirect:/register?error="
+                    + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8);
+        }
     }
 
     @GetMapping("/verify-otp")

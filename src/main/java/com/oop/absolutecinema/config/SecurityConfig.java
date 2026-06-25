@@ -3,6 +3,7 @@ package com.oop.absolutecinema.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,9 +30,14 @@ public class SecurityConfig {
                 // Public pages
                 .requestMatchers("/", "/katalog", "/katalog/**").permitAll()
                 .requestMatchers("/login", "/register").permitAll()
+                // Pre-login public flows (OTP verification + forgot/reset password)
+                .requestMatchers("/verify-otp", "/forgot-password", "/reset-password").permitAll()
 
                 // Static resources
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+
+                // Image upload — admin only (only admins add tayangan)
+                .requestMatchers("/api/upload/**").hasRole("ADMIN")
 
                 // Review form page REQUIRES login (currentUserId needed in controller)
                 .requestMatchers(HttpMethod.GET, "/tayangan/*/ulas").authenticated()
@@ -42,12 +48,20 @@ public class SecurityConfig {
                 // Admin area
                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                // Everything else (POST /api/reviews, POST /register handled above, etc.) needs login
+                // Everything else (POST /api/reviews, etc.) needs login
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/katalog", true)
+                .failureHandler((request, response, exception) -> {
+                    // Redirect disabled (unverified) users to a dedicated message
+                    if (exception instanceof DisabledException) {
+                        response.sendRedirect("/login?disabled");
+                    } else {
+                        response.sendRedirect("/login?error");
+                    }
+                })
                 .permitAll()
             )
             .logout(logout -> logout
@@ -58,3 +72,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+

@@ -8,6 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="manifest" th:href="@{/manifest.json}">
     <meta name="theme-color" content="#ff002b">
+    <link rel="icon" type="image/png" sizes="192x192" th:href="@{/images/icon-192.png}">
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/icon.svg}">
+    <link rel="apple-touch-icon" th:href="@{/images/icon-192.png}">
     <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
@@ -61,6 +64,9 @@
                         <label class="form-label">URL Gambar</label>
                         <input type="url" name="gambarUrl" class="form-control"
                                placeholder="https://... (kosongkan untuk placeholder)">
+                        <label class="form-label" style="margin-top:0.5rem;">atau upload file:</label>
+                        <input type="file" accept="image/*" onchange="uploadImage(this)">
+                        <small class="upload-status" style="color: var(--text-secondary);"></small>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Sinopsis</label>
@@ -108,6 +114,9 @@
                         <label class="form-label">URL Gambar</label>
                         <input type="url" name="gambarUrl" class="form-control"
                                placeholder="https://... (kosongkan untuk placeholder)">
+                        <label class="form-label" style="margin-top:0.5rem;">atau upload file:</label>
+                        <input type="file" accept="image/*" onchange="uploadImage(this)">
+                        <small class="upload-status" style="color: var(--text-secondary);"></small>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Sinopsis</label>
@@ -119,6 +128,44 @@
 
         </div>
     </main>
+
+    <script>
+        // Upload file ke /api/upload/gambar (ImageKit) lalu isi field gambarUrl
+        // yang berada di form yang sama dengan input file yang dipilih.
+        async function uploadImage(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            // The gambarUrl field sits just before the file label; walk up to form-group.
+            const formGroup = input.closest('.form-group');
+            const urlField = formGroup.querySelector('input[name="gambarUrl"]');
+            const status = formGroup.querySelector('.upload-status');
+            if (!urlField || !status) return;
+
+            status.textContent = 'Mengunggah...';
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/api/upload/gambar', {
+                    method: 'POST',
+                    body: formData
+                });
+                const text = await res.text();
+                if (res.ok) {
+                    urlField.value = text;
+                    status.style.color = '#4caf50';
+                    status.textContent = 'Gambar terunggah, URL terisi otomatis.';
+                } else {
+                    status.style.color = '#ff002b';
+                    status.textContent = 'Gagal: ' + text;
+                }
+            } catch (err) {
+                status.style.color = '#ff002b';
+                status.textContent = 'Terjadi kesalahan jaringan: ' + err.message;
+            }
+        }
+    </script>
 
 </body>
 </html>

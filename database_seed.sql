@@ -55,8 +55,11 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     role     VARCHAR(255) NOT NULL,
+    email    VARCHAR(255),
+    aktif    BOOLEAN      NOT NULL DEFAULT TRUE,
     PRIMARY KEY (id),
-    UNIQUE KEY uk_users_username (username)
+    UNIQUE KEY uk_users_username (username),
+    UNIQUE KEY uk_users_email (email)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS reviews (
@@ -79,10 +82,11 @@ CREATE TABLE IF NOT EXISTS reviews (
 -- (BCryptPasswordEncoder.matches) works out of the box.
 --   johndoe / janedoe -> plaintext "password123"
 --   admin             -> plaintext "admin123"
-INSERT INTO users (username, password, role) VALUES
-    ('johndoe', '$2b$12$0iq1D7FIRNEayPUJD5zf5OXVRehh.ImRP9cWpcV2ZgHUTOOCLED6e', 'MEMBER'),
-    ('janedoe', '$2b$12$0iq1D7FIRNEayPUJD5zf5OXVRehh.ImRP9cWpcV2ZgHUTOOCLED6e', 'MEMBER'),
-    ('admin',   '$2b$12$YgsHylDYsdQ7UB5lLN3/f.y3IzeWOvxG/v4TN4vBZmplkR84hTaH2',  'ADMIN');
+--   aktif=TRUE so seed users can log in immediately (Phase A2 column default).
+INSERT INTO users (username, password, role, email, aktif) VALUES
+    ('johndoe', '$2b$12$0iq1D7FIRNEayPUJD5zf5OXVRehh.ImRP9cWpcV2ZgHUTOOCLED6e', 'MEMBER', 'johndoe@example.com', TRUE),
+    ('janedoe', '$2b$12$0iq1D7FIRNEayPUJD5zf5OXVRehh.ImRP9cWpcV2ZgHUTOOCLED6e', 'MEMBER', 'janedoe@example.com', TRUE),
+    ('admin',   '$2b$12$YgsHylDYsdQ7UB5lLN3/f.y3IzeWOvxG/v4TN4vBZmplkR84hTaH2',  'ADMIN', 'admin@example.com',   TRUE);
 
 -- 2.2 Tayangan (parent rows) — IDs auto-generate as 1, 2, 3
 INSERT INTO tayangan (judul, sinopsis, tahun_rilis, total_skor, jumlah_reviewer) VALUES

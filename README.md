@@ -8,7 +8,7 @@ Repositori ini merupakan backend service untuk aplikasi Absolute Cinema. Proyek 
 ## Fitur Utama
 * **Kalkulasi Rating Otomatis:** Perhitungan rata-rata skor tayangan secara real-time menggunakan prinsip enkapsulasi OOP saat ulasan baru masuk.
 * **Autentikasi & Keamanan:** Sistem login dan registrasi yang diamankan dengan Spring Security, password hashing (BCrypt), dan verifikasi akun berbasis Email OTP.
-* **Manajemen File (Local Storage):** Fitur unggah gambar dengan penamaan unik (UUID) untuk poster tayangan dan foto profil pengguna.
+* **Unggah Gambar (ImageKit CDN):** Fitur unggah gambar ke ImageKit.io (CDN eksternal) sehingga menghasilkan URL publik yang disimpan di database — Railway-safe dan tidak hilang saat redeploy.
 * **Katalog Dinamis:** Pemisahan entitas antara Film dan Serial TV dengan properti dan detail yang spesifik untuk masing-masing jenis tayangan.
 
 ---
@@ -147,3 +147,28 @@ Tim dibagi menjadi 3 divisi utama untuk memastikan pengembangan yang terstruktur
 Untuk menguji API endpoint secara langsung, sistem ini telah terintegrasi dengan Swagger UI.
 * **Swagger UI Endpoint:** `http://localhost:8080/swagger-ui/index.html`
 * **OpenAPI Specification:** Silakan lihat file `openapi.yaml` pada direktori root proyek ini.
+
+---
+
+## Deployment (Railway)
+
+Aplikasi merupakan Progressive Web App (PWA) yang dapat dipasang (installable) dari domain Railway. Semua rahasia dibaca dari environment variables — tidak ada kredensial yang di-hardcode di repo.
+
+### Environment Variables yang harus diset
+
+| Variabel | Wajib | Keterangan |
+| :--- | :---: | :--- |
+| `DB_URL` | Ya | JDBC URL MySQL (mis. `jdbc:mysql://...:3306/dbname`). |
+| `DB_USER` | Ya | User database MySQL. |
+| `DB_PASS` | Ya | Password database MySQL. |
+| `PORT` | Otomatis | Diset otomatis Railway; default `8080` jika kosong. |
+| `MAIL_USERNAME` | Ya* | Email Gmail untuk mengirim OTP (pakai Gmail App Password, bukan password biasa). |
+| `MAIL_PASSWORD` | Ya* | App Password Gmail. \*Wajib bila fitur register/forgot-password digunakan. |
+| `IMAGEKIT_PRIVATE_KEY` | Ya** | Private key ImageKit untuk upload server-side. |
+| `IMAGEKIT_PUBLIC_KEY` | Opsional | Public key ImageKit (untuk referensi). |
+| `IMAGEKIT_URL_ENDPOINT` | Opsional | URL endpoint ImageKit (mis. `https://ik.imagekit.io/...`). |
+
+> **Catatan:** Aplikasi tetap booting walau kredensial mail/ImageKit kosong; error hanya muncul saat fitur terkait benar-benar dipakai.
+
+### Catatan Database
+Skema dibuat otomatis oleh Hibernate (`ddl-auto: update`). Kolom `email` dan `aktif` pada tabel `users` ditambahkan via ALTER dengan `DEFAULT TRUE`, sehingga user lama tidak terkunci. Jalankan `database_seed.sql` hanya pada database kosong untuk data contoh.

@@ -1,10 +1,15 @@
-const CACHE_NAME = 'absolute-cinema-v1';
+const CACHE_NAME = 'absolute-cinema-v2';
 const ASSETS_TO_CACHE = [
   '/',
+  '/katalog',
   '/css/style.css',
+  '/js/app.js',
   '/manifest.json',
+  '/service-worker.js',
   '/images/icon-192.png',
-  '/images/icon-512.png'
+  '/images/icon-512.png',
+  '/images/icon.svg',
+  '/images/poster-placeholder.svg'
 ];
 
 self.addEventListener('install', event => {
@@ -12,8 +17,14 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Opened cache');
-        return cache.addAll(ASSETS_TO_CACHE);
+        // addAll fails atomically if any request errors; keep core assets robust.
+        return Promise.allSettled(
+          ASSETS_TO_CACHE.map(url =>
+            cache.add(url).catch(err => console.warn('SW cache miss:', url, err))
+          )
+        );
       })
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -51,6 +62,6 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
 });

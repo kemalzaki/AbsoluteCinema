@@ -13,8 +13,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-  mvc:
-    static-path-pattern: /static/**
   servlet:
     multipart:
       max-file-size: 5MB
@@ -26,3 +24,9 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+
+app:
+  imagekit:
+    private-key:  ${IMAGEKIT_PRIVATE_KEY:}
+    public-key:   ${IMAGEKIT_PUBLIC_KEY:}
+    url-endpoint: ${IMAGEKIT_URL_ENDPOINT:}

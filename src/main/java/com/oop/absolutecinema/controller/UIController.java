@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -104,11 +106,68 @@ public class UIController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestParam String username, @RequestParam String password) {
+    public String register(@RequestParam String username,
+                           @RequestParam String password,
+                           @RequestParam String email) {
         UserDTO.RegisterRequest req = new UserDTO.RegisterRequest();
         req.setUsername(username);
         req.setPassword(password);
+        req.setEmail(email);
         authService.register(req);
-        return "redirect:/login?registered";
+        // AuthService.register() sets aktif=false and emails an OTP;
+        // send the user straight to the OTP page so they can verify.
+        return "redirect:/verify-otp?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8);
+    }
+
+    @GetMapping("/verify-otp")
+    public String verifyOtpPage(@RequestParam(required = false) String email, Model model) {
+        model.addAttribute("email", email);
+        return "verify-otp";
+    }
+
+    @PostMapping("/verify-otp")
+    public String verifyOtp(@RequestParam String email, @RequestParam String otp) {
+        try {
+            authService.verifikasiOtp(email, otp);
+            return "redirect:/login?verified";
+        } catch (RuntimeException e) {
+            return "redirect:/verify-otp?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8)
+                    + "&error";
+        }
+    }
+
+    @GetMapping("/forgot-password")
+    public String forgotPasswordPage() {
+        return "forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String forgotPassword(@RequestParam String email) {
+        try {
+            authService.lupaPassword(email);
+            return "redirect:/reset-password?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8)
+                    + "&sent";
+        } catch (RuntimeException e) {
+            return "redirect:/forgot-password?error";
+        }
+    }
+
+    @GetMapping("/reset-password")
+    public String resetPasswordPage(@RequestParam(required = false) String email, Model model) {
+        model.addAttribute("email", email);
+        return "reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestParam String email,
+                                @RequestParam String otp,
+                                @RequestParam String passwordBaru) {
+        try {
+            authService.resetPassword(email, otp, passwordBaru);
+            return "redirect:/login?reset";
+        } catch (RuntimeException e) {
+            return "redirect:/reset-password?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8)
+                    + "&error";
+        }
     }
 }

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi OTP — AbsoluteCinema</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="manifest" th:href="@{/manifest.json}">
+    <meta name="theme-color" content="#ff002b">
+    <link rel="icon" type="image/png" sizes="192x192" th:href="@{/images/icon-192.png}">
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/icon.svg}">
+    <link rel="apple-touch-icon" th:href="@{/images/icon-192.png}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+
+    <header th:replace="~{fragments/header :: header}"></header>
+
+    <main class="page container">
+        <div class="auth-wrap">
+            <h1>Verifikasi OTP</h1>
+            <p class="auth-subtitle">Masukkan kode 6 digit yang dikirim ke email Anda</p>
+
+            <div class="alert alert-error" th:if="${param.error}">
+                Kode OTP salah atau sudah kedaluwarsa.
+            </div>
+
+            <form th:action="@{/verify-otp}" method="post">
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" id="email" name="email"
+                           class="form-control" readonly
+                           th:value="${email}" placeholder="email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="otp">Kode OTP</label>
+                    <input type="text" id="otp" name="otp"
+                           class="form-control" placeholder="6 digit"
+                           inputmode="numeric" pattern="[0-9]{6}"
+                           maxlength="6" minlength="6" required autofocus>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Verifikasi</button>
+            </form>
+
+            <p class="auth-footer">
+                <a th:href="@{/login}">Kembali ke Login</a>
+            </p>
+        </div>
+    </main>
+
+</body>
+</html>

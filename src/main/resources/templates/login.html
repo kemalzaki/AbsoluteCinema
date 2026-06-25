@@ -8,6 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="manifest" th:href="@{/manifest.json}">
     <meta name="theme-color" content="#ff002b">
+    <link rel="icon" type="image/png" sizes="192x192" th:href="@{/images/icon-192.png}">
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/icon.svg}">
+    <link rel="apple-touch-icon" th:href="@{/images/icon-192.png}">
     <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
@@ -23,13 +26,25 @@
             <div class="alert alert-error" th:if="${param.error}">
                 Username atau password salah.
             </div>
+            <!-- ?disabled when Spring Security rejects an unverified (aktif=false) account -->
+            <div class="alert alert-error" th:if="${param.disabled}">
+                Akun Anda belum diverifikasi. Cek email untuk kode OTP.
+            </div>
             <!-- ?logout after successful logout -->
             <div class="alert alert-info" th:if="${param.logout}">
                 Anda telah logout.
             </div>
-            <!-- ?registered after successful registration (from POST /register) -->
+            <!-- ?registered after successful registration (legacy; new flow redirects to /verify-otp) -->
             <div class="alert alert-success" th:if="${param.registered}">
                 Registrasi berhasil! Silakan login.
+            </div>
+            <!-- ?verified after successful OTP verification -->
+            <div class="alert alert-success" th:if="${param.verified}">
+                Akun berhasil diverifikasi! Silakan login.
+            </div>
+            <!-- ?reset after successful password reset -->
+            <div class="alert alert-success" th:if="${param.reset}">
+                Password berhasil direset! Silakan login dengan password baru.
             </div>
 
             <!-- Spring Security default form login: POST /login, fields username + password -->
@@ -47,8 +62,11 @@
                 <button type="submit" class="btn btn-primary btn-full">Login</button>
             </form>
 
-            <p class="auth-footer">
+            <p class="auth-footer" style="margin-bottom: 0.5rem;">
                 Belum punya akun? <a th:href="@{/register}">Register di sini</a>
+            </p>
+            <p class="auth-footer">
+                <a th:href="@{/forgot-password}">Lupa password?</a>
             </p>
         </div>
     </main>

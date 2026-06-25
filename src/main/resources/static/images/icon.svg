@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <!-- Background: brand red, fills the canvas for safe "maskable" padding -->
+    <rect width="512" height="512" fill="#ff002b"/>
+
+    <!-- Clapperboard top bar -->
+    <rect x="96" y="96" width="320" height="64" fill="#0a0a0a"/>
+    <!-- Clapperboard stripes (alternating) -->
+    <polygon points="96,96 160,96 144,160 96,160" fill="#ffffff"/>
+    <polygon points="176,96 240,96 224,160 168,160" fill="#ffffff"/>
+    <polygon points="256,96 320,96 304,160 248,160" fill="#ffffff"/>
+    <polygon points="336,96 416,96 416,160 384,160" fill="#ffffff"/>
+
+    <!-- Clapperboard body -->
+    <rect x="96" y="160" width="320" height="256" fill="#0a0a0a"/>
+
+    <!-- "AC" monogram -->
+    <text x="256" y="346" font-family="'Segoe UI', Arial, Helvetica, sans-serif"
+          font-size="150" font-weight="800" fill="#f5c518"
+          text-anchor="middle">AC</text>
+</svg>

@@ -7,8 +7,6 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
-    private String email;
-    private boolean aktif;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +20,16 @@ public class User {
 
     @Column(nullable = false)
     private String role;
+
+    @Column(unique = true)
+    private String email;
+
+    // columnDefinition ensures existing rows get TRUE on ALTER TABLE
+    // (ddl-auto: update), so seed users aren't locked out. New web
+    // registrations still start disabled because AuthService.register()
+    // explicitly calls setAktif(false).
+    @Column(name = "aktif", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean aktif = true;
 
     /**
      * Alasan FetchType.LAZY:

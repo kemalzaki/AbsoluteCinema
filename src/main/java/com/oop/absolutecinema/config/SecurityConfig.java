@@ -33,8 +33,11 @@ public class SecurityConfig {
                 // Pre-login public flows (OTP verification + forgot/reset password)
                 .requestMatchers("/verify-otp", "/forgot-password", "/reset-password").permitAll()
 
-                // Static resources
-                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                // Static resources (root-level PWA files must be public so the
+                // service worker can register & the manifest can load — otherwise
+                // Spring redirects anon requests to /login, breaking SW + HTTPS)
+                .requestMatchers("/css/**", "/js/**", "/images/**",
+                                 "/manifest.json", "/service-worker.js").permitAll()
 
                 // Image upload — admin only (only admins add tayangan)
                 .requestMatchers("/api/upload/**").hasRole("ADMIN")

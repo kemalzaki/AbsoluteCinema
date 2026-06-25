@@ -9,6 +9,7 @@ Repositori ini merupakan backend service untuk aplikasi Absolute Cinema. Proyek 
 * **Kalkulasi Rating Otomatis:** Perhitungan rata-rata skor tayangan secara real-time menggunakan prinsip enkapsulasi OOP saat ulasan baru masuk.
 * **Autentikasi & Keamanan:** Sistem login dan registrasi yang diamankan dengan Spring Security, password hashing (BCrypt), dan verifikasi akun berbasis Email OTP.
 * **Unggah Gambar (ImageKit CDN):** Fitur unggah gambar ke ImageKit.io (CDN eksternal) sehingga menghasilkan URL publik yang disimpan di database — Railway-safe dan tidak hilang saat redeploy.
+* **Import dari TMDB:** Admin dapat mencari film/serial di The Movie Database (themoviedb.org) dan mengimpornya ke katalog dalam satu klik — metadata (judul, sinopsis, tahun, genre, sutradara, jumlah musim/episode, poster) terisi otomatis. API key TMDB tetap di server dan tidak pernah terekspos ke browser.
 * **Katalog Dinamis:** Pemisahan entitas antara Film dan Serial TV dengan properti dan detail yang spesifik untuk masing-masing jenis tayangan.
 
 ---
@@ -167,8 +168,12 @@ Aplikasi merupakan Progressive Web App (PWA) yang dapat dipasang (installable) d
 | `IMAGEKIT_PRIVATE_KEY` | Ya** | Private key ImageKit untuk upload server-side. |
 | `IMAGEKIT_PUBLIC_KEY` | Opsional | Public key ImageKit (untuk referensi). |
 | `IMAGEKIT_URL_ENDPOINT` | Opsional | URL endpoint ImageKit (mis. `https://ik.imagekit.io/...`). |
+| `TMDB_API_KEY` | Opsional*** | API key The Movie Database (themoviedb.org) untuk fitur Import di halaman admin. Dapatkan gratis setelah mendaftar & request API key di Settings → API. |
+| `TMDB_BASE_URL` | Opsional | Override base URL TMDB (default `https://api.themoviedb.org/3`). |
+| `TMDB_IMAGE_BASE` | Opsional | Override base URL poster (default `https://image.tmdb.org/t/p/w500`). |
+| `TMDB_LANGUAGE` | Opsional | Bahasa respons TMDB (default `id-ID`). |
 
-> **Catatan:** Aplikasi tetap booting walau kredensial mail/ImageKit kosong; error hanya muncul saat fitur terkait benar-benar dipakai.
+> **Catatan:** Aplikasi tetap booting walau kredensial mail/ImageKit/TMDB kosong; error hanya muncul saat fitur terkait benar-benar dipakai. \*\*\*TMDB dibutuhkan hanya saat admin memakai fitur "Import dari TMDB" di `/admin`; katalog manual tetap berfungsi tanpanya.
 
 ### Catatan Database
 Skema dibuat otomatis oleh Hibernate (`ddl-auto: update`). Kolom `email` dan `aktif` pada tabel `users` ditambahkan via ALTER dengan `DEFAULT TRUE`, sehingga user lama tidak terkunci. Jalankan `database_seed.sql` hanya pada database kosong untuk data contoh.

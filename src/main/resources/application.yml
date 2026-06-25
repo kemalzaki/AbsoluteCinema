@@ -30,3 +30,8 @@ app:
     private-key:  ${IMAGEKIT_PRIVATE_KEY:}
     public-key:   ${IMAGEKIT_PUBLIC_KEY:}
     url-endpoint: ${IMAGEKIT_URL_ENDPOINT:}
+  tmdb:
+    api-key:     ${TMDB_API_KEY:}
+    base-url:    https://api.themoviedb.org/3
+    image-base:  https://image.tmdb.org/t/p/w500
+    language:    id-ID

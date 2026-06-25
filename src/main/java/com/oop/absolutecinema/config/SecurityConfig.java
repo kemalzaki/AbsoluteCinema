@@ -39,6 +39,9 @@ public class SecurityConfig {
                 // Image upload — admin only (only admins add tayangan)
                 .requestMatchers("/api/upload/**").hasRole("ADMIN")
 
+                // TMDB search/import — admin only (api key stays server-side)
+                .requestMatchers("/api/tmdb/**").hasRole("ADMIN")
+
                 // Review form page REQUIRES login (currentUserId needed in controller)
                 .requestMatchers(HttpMethod.GET, "/tayangan/*/ulas").authenticated()
 

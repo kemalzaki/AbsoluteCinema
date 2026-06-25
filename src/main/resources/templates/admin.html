@@ -127,6 +127,34 @@
             </section>
 
         </div>
+
+        <!-- ===== IMPORT DARI TMDB ===== -->
+        <section style="margin-top: 2.5rem;">
+            <h3 class="section-title">Import dari TMDB</h3>
+            <p class="auth-subtitle" style="margin-bottom: 1rem;">
+                Cari film/serial di The Movie Database, lalu klik Import untuk menambahkannya
+                ke katalog beserta poster, genre, sutradara, dan metadata lainnya.
+            </p>
+
+            <div class="form-group" style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:flex-end;">
+                <div style="flex:1 1 300px;">
+                    <label class="form-label">Cari judul</label>
+                    <input type="text" id="tmdb-query" class="form-control"
+                           placeholder="Mis. Inception, Breaking Bad...">
+                </div>
+                <div>
+                    <label class="form-label">Tipe</label>
+                    <select id="tmdb-type" class="form-control">
+                        <option value="movie">Film</option>
+                        <option value="tv">Serial TV</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="searchTmdb()">Cari</button>
+            </div>
+
+            <div id="tmdb-status" class="alert" style="display:none; margin-top:1rem;"></div>
+            <div id="tmdb-results" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:1rem; margin-top:1rem;"></div>
+        </section>
     </main>
 
     <script>
@@ -165,6 +193,107 @@
                 status.textContent = 'Terjadi kesalahan jaringan: ' + err.message;
             }
         }
+
+        // ===== TMDB search & import =====
+        const PLACEHOLDER = '/images/poster-placeholder.svg';
+        const resultsBox = document.getElementById('tmdb-results');
+        const statusBox = document.getElementById('tmdb-status');
+
+        function showStatus(msg, ok) {
+            if (!msg) { statusBox.style.display = 'none'; return; }
+            statusBox.style.display = 'block';
+            statusBox.textContent = msg;
+            statusBox.className = 'alert ' + (ok ? 'alert-success' : 'alert-error');
+        }
+
+        async function searchTmdb() {
+            const q = document.getElementById('tmdb-query').value.trim();
+            const type = document.getElementById('tmdb-type').value;
+            if (!q) { showStatus('Masukkan kata kunci.', false); return; }
+            resultsBox.innerHTML = '';
+            showStatus('Mencari...', true);
+            try {
+                const res = await fetch('/api/tmdb/search?q=' + encodeURIComponent(q) + '&type=' + type);
+                const data = await res.json();
+                if (!res.ok) {
+                    showStatus(data.message || 'Pencarian gagal.', false);
+                    return;
+                }
+                if (!Array.isArray(data) || data.length === 0) {
+                    showStatus('Tidak ada hasil untuk "' + q + '".', false);
+                    return;
+                }
+                showStatus(data.length + ' hasil ditemukan.', true);
+                renderResults(data);
+            } catch (err) {
+                showStatus('Terjadi kesalahan jaringan: ' + err.message, false);
+            }
+        }
+
+        function renderResults(items) {
+            resultsBox.innerHTML = '';
+            for (const it of items) {
+                const card = document.createElement('div');
+                card.style.cssText = 'border:1px solid var(--border-color,#222); border-radius:8px; padding:0.75rem; background:#111;';
+
+                const img = document.createElement('img');
+                img.src = it.posterUrl || PLACEHOLDER;
+                img.alt = it.title || '';
+                img.style.cssText = 'width:100%; height:300px; object-fit:cover; border-radius:4px; margin-bottom:0.5rem; background:#000;';
+                img.onerror = function() { this.onerror = null; this.src = PLACEHOLDER; };
+
+                const title = document.createElement('div');
+                title.innerHTML = '<strong>' + escapeHtml(it.title || '(tanpa judul)') + '</strong>'
+                    + (it.year ? ' <span style="color:var(--text-secondary);">(' + escapeHtml(it.year) + ')</span>' : '');
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-primary';
+                btn.style.marginTop = '0.5rem';
+                btn.textContent = 'Import';
+                btn.onclick = function() { importTmdb(it.type, it.tmdbId, btn, title); };
+
+                card.appendChild(img);
+                card.appendChild(title);
+                card.appendChild(btn);
+                resultsBox.appendChild(card);
+            }
+        }
+
+        async function importTmdb(type, tmdbId, btn, label) {
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Mengimpor...';
+            try {
+                const res = await fetch('/api/tmdb/import?type=' + type + '&tmdbId=' + tmdbId, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    btn.textContent = '✓ Tersimpan';
+                    btn.style.background = '#4caf50';
+                    label.innerHTML += ' <a href="/tayangan/' + data.id + '" style="color:#4caf50;">Lihat &rarr;</a>';
+                    showStatus('Berhasil import: ' + (data.judul || ''), true);
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                    showStatus(data.message || 'Import gagal.', false);
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                showStatus('Terjadi kesalahan jaringan: ' + err.message, false);
+            }
+        }
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, function(c) {
+                return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+            });
+        }
+
+        // Enter key pada kotak pencarian memicu search
+        document.getElementById('tmdb-query').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); searchTmdb(); }
+        });
     </script>
 
 </body>

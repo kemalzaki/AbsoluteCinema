@@ -32,28 +32,44 @@ public class AuthService {
     // =====================
     public UserDTO.Response register(UserDTO.RegisterRequest dto) {
 
-        // Cek apakah email sudah dipakai akun existing. Kalau ada akun
-        // belum terverifikasi (aktif=false) dari percobaan register sebelumnya
-        // yang gagal kirim OTP / ditinggal user, kita reuse row-nya supaya
-        // UNIQUE constraint di kolom email tidak menghalangi retry. Username
-        // dan password ditimpa dari permintaan baru, lalu OTP di-regenerate.
-        Optional<User> existing = userRepository.findByEmail(dto.getEmail());
+        // Pre-check email: kalau sudah ada akun AKTIF dengan email ini, tolak.
+        // Kalau ada akun belum terverifikasi (aktif=false) dari percobaan register
+        // sebelumnya yang gagal kirim OTP / ditinggal user, kita reuse row-nya
+        // supaya UNIQUE constraint di kolom email tidak menghalangi retry.
+        Optional<User> byEmail = userRepository.findByEmail(dto.getEmail());
+        if (byEmail.isPresent() && byEmail.get().isAktif()) {
+            throw new RuntimeException(
+                "Email sudah terdaftar dan terverifikasi. Silakan login.");
+        }
+
+        // Pre-check username: kalau sudah dipakai akun AKTIF, tolak. Kalau sudah
+        // dipakai akun belum terverifikasi dengan email BERBEDA, tolak juga —
+        // kita tidak bisa meng-merge dua registrasi pending akun berbeda.
+        // (Kalau username itu dipegang oleh row email yang sama, akan di-reuse
+        // di blok bawah.)
+        Optional<User> byUsername = userRepository.findByUsername(dto.getUsername());
+        if (byUsername.isPresent() && byUsername.get().isAktif()) {
+            throw new RuntimeException("Username sudah dipakai. Pilih yang lain.");
+        }
+        if (byUsername.isPresent()
+                && (byEmail.isEmpty() || !byUsername.get().equals(byEmail.get()))) {
+            throw new RuntimeException(
+                "Username sudah dipakai akun lain yang belum terverifikasi. Pilih yang lain.");
+        }
 
         User user;
-        if (existing.isPresent()) {
-            User u = existing.get();
-            if (u.isAktif()) {
-                throw new RuntimeException(
-                    "Email sudah terdaftar dan terverifikasi. Silakan login.");
-            }
-            u.setUsername(dto.getUsername());
-            u.setPassword(passwordEncoder.encode(dto.getPassword()));
-            user = u;
+        if (byEmail.isPresent()) {
+            // Reuse row dari registrasi sebelumnya dengan email ini yang belum
+            // diverifikasi. Username & password ditimpa dari request baru.
+            user = byEmail.get();
         } else {
             user = new User(dto.getUsername(), passwordEncoder.encode(dto.getPassword()), "MEMBER");
             user.setEmail(dto.getEmail());
             user.setAktif(false); // belum aktif sampai OTP diverifikasi
         }
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         userRepository.save(user);
 
         // Generate OTP dan kirim ke email

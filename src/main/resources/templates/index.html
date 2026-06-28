@@ -13,12 +13,12 @@
     <link rel="apple-touch-icon" th:href="@{/images/icon-192.png}">
     <script th:src="@{/js/app.js}" defer></script>
 </head>
-<body>
+<body class="page-home">
 
-    <!-- Shared header / nav — showTitle=false because the hero below shows
-         the full "AbsoluteCinema Reviews" wordmark; navbar keeps just the
-         AC badge to avoid duplicating the title. -->
-    <header th:replace="~{fragments/header :: header(showTitle=false)}"></header>
+    <!-- Shared header / nav. Wordmark is hidden via CSS on this page
+         (.page-home .logo-text { display: none }) because the hero below
+         shows the full brand title; navbar keeps just the AC badge. -->
+    <header th:replace="~{fragments/header :: header}"></header>
 
     <section class="hero">
         <div class="hero-content">

@@ -2,7 +2,9 @@
 //   v2 → v3: purge stale SW state from SecurityConfig redirect era.
 //   v3 → v4: re-cache updated CSS (loading bar) + JS (loading bar + PWA prompt).
 //   v4 → v5: re-cache updated CSS (hamburger dropdown) + JS (nav toggle).
-const CACHE_NAME = 'absolute-cinema-v5';
+//   v5 → v6: drop Thymeleaf fragment parameter (was breaking non-home pages);
+//            switch to body.page-home CSS class for wordmark hiding.
+const CACHE_NAME = 'absolute-cinema-v6';
 const ASSETS_TO_CACHE = [
   '/',
   '/katalog',

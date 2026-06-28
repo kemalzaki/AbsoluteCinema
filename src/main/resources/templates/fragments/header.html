@@ -2,28 +2,16 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<!--
-  Shared header + nav fragment.
-  Usage:
-    Default (shows AC badge + full wordmark):
-      <header th:replace="~{fragments/header :: header}"></header>
-    Home page (badge only — hero already has the brand title):
-      <header th:replace="~{fragments/header :: header(showTitle=false)}"></header>
--->
 <body>
 
-<header th:fragment="header(showTitle)">
+<header th:fragment="header">
     <a th:href="@{/}" class="logo" aria-label="AbsoluteCinema Reviews — Home">
-        <!-- Brand badge always visible (compact mark when wordmark hidden,
-             e.g. on home page where the hero shows the full title). -->
         <span class="logo-mark" aria-hidden="true">AC</span>
-        <span class="logo-text" th:if="${showTitle != false}">
+        <span class="logo-text">
             AbsoluteCinema <span class="text-primary">Reviews</span>
         </span>
     </a>
 
-    <!-- Hamburger toggle. Hidden on desktop via CSS (display:none above 768px).
-         JS wires the aria-expanded state and the .nav-open class on <header>. -->
     <button class="nav-toggle" type="button"
             aria-label="Toggle navigation menu"
             aria-controls="main-nav"
@@ -36,14 +24,12 @@
         <a th:href="@{/katalog}">Katalog</a>
         <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">Admin</a>
 
-        <!-- Shown only when logged in -->
         <a sec:authorize="isAuthenticated()"
            th:href="@{/logout}"
            onclick="return confirm('Logout sekarang?');">
             Logout
         </a>
 
-        <!-- Shown only when anonymous (not logged in) -->
         <a sec:authorize="isAnonymous()" th:href="@{/login}">Login</a>
         <a sec:authorize="isAnonymous()" th:href="@{/register}">Register</a>
     </nav>

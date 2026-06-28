@@ -90,6 +90,12 @@ header {
     /* Wordmark sits next to the badge when shown. */
 }
 
+/* Home page hides the wordmark because the hero shows the full brand
+   title — avoids visual duplication. Body class is set in index.html. */
+body.page-home .logo-text {
+    display: none;
+}
+
 nav {
     display: flex;
     gap: 2rem;

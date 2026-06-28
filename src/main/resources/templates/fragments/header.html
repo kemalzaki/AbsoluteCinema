@@ -2,11 +2,14 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<!-- Shared header + nav fragment. Include with:
-     <header th:replace="~{fragments/header :: header}"></header>
-     <!-- default: show wordmark -->
-     <header th:replace="~{fragments/header :: header(showTitle=false)}"></header>
-     <!-- hide wordmark (used by home page, which has the brand in its hero) --> -->
+<!--
+  Shared header + nav fragment.
+  Usage:
+    Default (shows AC badge + full wordmark):
+      <header th:replace="~{fragments/header :: header}"></header>
+    Home page (badge only — hero already has the brand title):
+      <header th:replace="~{fragments/header :: header(showTitle=false)}"></header>
+-->
 <body>
 
 <header th:fragment="header(showTitle)">

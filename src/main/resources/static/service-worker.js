@@ -1,4 +1,7 @@
-const CACHE_NAME = 'absolute-cinema-v2';
+// Version bumped from v2 → v3 to force existing clients (yang sebelumnya gagal
+// register SW karena SecurityConfig redirect) untuk mengambil SW baru saat
+// deploy. Activate handler akan purge cache lama.
+const CACHE_NAME = 'absolute-cinema-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/katalog',
@@ -64,4 +67,11 @@ self.addEventListener('activate', event => {
       );
     }).then(() => self.clients.claim())
   );
+});
+
+// Pesan dari page → langsung aktifkan SW baru tanpa tunggu semua tab tutup.
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });

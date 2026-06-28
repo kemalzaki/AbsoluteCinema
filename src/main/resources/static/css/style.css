@@ -529,6 +529,46 @@ textarea.form-control { resize: vertical; min-height: 100px; }
     .movie-img { height: 240px; }
 }
 
+/* --- MOBILE RESPONSIVE TAMBAHAN --- */
+@media (max-width: 768px) {
+    /* Navbar */
+    nav {
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+    nav a { font-size: 0.85rem; }
+
+    /* Hero buttons */
+    .btn-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .btn { width: 100%; text-align: center; }
+
+    /* Search */
+    .search-box input { max-width: 100%; }
+
+    /* Modal */
+    .modal-content {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    /* Auth */
+    .auth-wrap {
+        margin: 2vh 1rem;
+        padding: 1.5rem;
+    }
+
+    /* Review */
+    .review-header { flex-direction: column; gap: 0.5rem; }
+    .review-footer { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+
+    /* Detail */
+    .detail-header h1 { font-size: 1.8rem; }
+    .detail-meta { gap: 0.75rem; }
+}
 /* Interactive Star Rating */
 .interactive-stars {
     display: flex;

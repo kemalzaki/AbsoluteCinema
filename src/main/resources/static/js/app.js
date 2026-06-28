@@ -78,3 +78,94 @@ window.triggerPwaInstall = async () => {
   deferredInstallPrompt = null;
   return outcome === 'accepted';
 };
+
+// =====================================================================
+// Top navigation loading bar (NProgress-style).
+//
+// In PWA standalone mode the browser URL bar is hidden, so users get no
+// visual signal that a click triggered navigation — the app feels frozen
+// for the 200-2000ms until the new page renders. We add a red bar at the
+// top of the viewport that fires on internal link click / form submit,
+// animates to ~85% (slow tail), and completes when `pageshow` fires on
+// the next page. Server-side rendering means skeleton loaders wouldn't
+// help here — the HTML arrives already populated.
+// =====================================================================
+(function setupLoadingBar() {
+  let bar = null;
+  let timer = null;
+  let active = false;
+
+  function ensureBar() {
+    if (bar) return bar;
+    bar = document.createElement('div');
+    bar.className = 'nav-progress';
+    document.body.appendChild(bar);
+    return bar;
+  }
+
+  function setClass(cls) {
+    const b = ensureBar();
+    // Force reflow so consecutive transitions restart cleanly.
+    void b.offsetWidth;
+    b.className = 'nav-progress ' + cls;
+  }
+
+  function startBar() {
+    if (active) return;
+    active = true;
+    setClass('start');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setClass('loading'));
+    });
+    // Safety net: if pageshow never fires (navigation off-site, slow
+    // network with no commit), hide the bar after 10s so it doesn't
+    // hang forever.
+    clearTimeout(timer);
+    timer = setTimeout(finishBar, 10000);
+  }
+
+  function finishBar() {
+    if (!active) return;
+    active = false;
+    clearTimeout(timer);
+    setClass('complete');
+    setTimeout(() => {
+      setClass('hide');
+      setTimeout(() => {
+        if (bar) bar.className = 'nav-progress';
+      }, 400);
+    }, 200);
+  }
+
+  // ---- Triggers: internal link clicks ----
+  document.addEventListener('click', (e) => {
+    if (e.defaultPrevented || e.button !== 0 ||
+        e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    if (a.target === '_blank' || a.hasAttribute('download')) return;
+    const href = a.getAttribute('href') || '';
+    // Skip external, mailto:, tel:, javascript:.
+    if (/^(mailto:|tel:|javascript:)/i.test(href)) return;
+    if (/^https?:/i.test(href) && !href.startsWith(location.origin)) return;
+    // Skip same-page hash-only links (e.g., #section).
+    try {
+      const url = new URL(a.href, location.href);
+      if (url.pathname === location.pathname &&
+          url.search === location.search && url.hash) return;
+    } catch (_) { /* relative href — proceed */ }
+    startBar();
+  });
+
+  // ---- Triggers: form submit (login, register, OTP, admin, etc.) ----
+  document.addEventListener('submit', (e) => {
+    if (e.defaultPrevented) return;
+    startBar();
+  });
+
+  // ---- Resolve when new page is committed (also covers BFCache restore) ----
+  window.addEventListener('pageshow', finishBar);
+  // If this script runs after page is already complete (cached SW),
+  // resolve immediately so a stale bar doesn't linger.
+  if (document.readyState === 'complete') finishBar();
+})();

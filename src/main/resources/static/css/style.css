@@ -588,3 +588,64 @@ textarea.form-control { resize: vertical; min-height: 100px; }
 .interactive-stars span.active {
     color: var(--star-color);
 }
+
+/* =====================================================================
+   Top navigation loading bar (NProgress-style).
+   Critical for PWA standalone mode — without a browser URL bar, users
+   have no visual signal that a click triggered navigation, so the app
+   feels frozen until the next page renders. This bar fires on any
+   internal link click or form submit, and resolves on pageshow.
+   ===================================================================== */
+.nav-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--primary-color);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    box-shadow: 0 0 8px rgba(255, 0, 43, 0.5);
+}
+
+/* Quick pop to 30% so user gets immediate feedback on click. */
+.nav-progress.start {
+    opacity: 1;
+    transform: scaleX(0.3);
+    transition: opacity 100ms ease, transform 100ms ease;
+}
+
+/* Slow tail up to 85% — long enough that it never reaches 100% before
+   the new page loads (which would falsely signal completion). */
+.nav-progress.loading {
+    opacity: 1;
+    transform: scaleX(0.85);
+    transition: transform 6s cubic-bezier(0.1, 0.7, 0.3, 1);
+}
+
+/* Snap to full width when new page is committed. */
+.nav-progress.complete {
+    opacity: 1;
+    transform: scaleX(1);
+    transition: transform 200ms ease;
+}
+
+/* Fade out after completion. */
+.nav-progress.hide {
+    opacity: 0;
+    transition: opacity 300ms ease 100ms;
+}
+
+/* Respect reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+    .nav-progress,
+    .nav-progress.start,
+    .nav-progress.loading,
+    .nav-progress.complete,
+    .nav-progress.hide {
+        transition-duration: 1ms !important;
+    }
+}

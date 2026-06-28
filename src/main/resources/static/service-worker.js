@@ -1,7 +1,7 @@
-// Version bumped from v2 → v3 to force existing clients (yang sebelumnya gagal
-// register SW karena SecurityConfig redirect) untuk mengambil SW baru saat
-// deploy. Activate handler akan purge cache lama.
-const CACHE_NAME = 'absolute-cinema-v3';
+// Version history:
+//   v2 → v3: purge stale SW state from SecurityConfig redirect era.
+//   v3 → v4: re-cache updated CSS (loading bar) + JS (loading bar + PWA prompt).
+const CACHE_NAME = 'absolute-cinema-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/katalog',

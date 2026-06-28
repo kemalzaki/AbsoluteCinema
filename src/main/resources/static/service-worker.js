@@ -1,7 +1,8 @@
 // Version history:
 //   v2 → v3: purge stale SW state from SecurityConfig redirect era.
 //   v3 → v4: re-cache updated CSS (loading bar) + JS (loading bar + PWA prompt).
-const CACHE_NAME = 'absolute-cinema-v4';
+//   v4 → v5: re-cache updated CSS (hamburger dropdown) + JS (nav toggle).
+const CACHE_NAME = 'absolute-cinema-v5';
 const ASSETS_TO_CACHE = [
   '/',
   '/katalog',

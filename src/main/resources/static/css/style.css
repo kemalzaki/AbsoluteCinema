@@ -60,16 +60,76 @@ header {
     font-size: 1.8rem;
     font-weight: 800;
     letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
 }
 
 .logo .text-primary {
     color: var(--primary-color);
 }
 
+/* Compact brand badge — always visible so the home link is recognizable
+   even when the wordmark is suppressed (e.g. on the home page hero). */
+.logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--primary-color);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    margin-right: 0.6rem;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+}
+
+.logo-text {
+    /* Wordmark sits next to the badge when shown. */
+}
+
 nav {
     display: flex;
     gap: 2rem;
     align-items: center;
+}
+
+/* Hamburger toggle — hidden on desktop, revealed via media query below. */
+.nav-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    border-radius: 4px;
+}
+.nav-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+.nav-toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text-primary);
+    transition: transform 250ms ease, opacity 200ms ease;
+    border-radius: 1px;
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
 }
 
 nav a {
@@ -531,13 +591,45 @@ textarea.form-control { resize: vertical; min-height: 100px; }
 
 /* --- MOBILE RESPONSIVE TAMBAHAN --- */
 @media (max-width: 768px) {
-    /* Navbar */
-    nav {
-        gap: 0.6rem;
-        flex-wrap: wrap;
-        justify-content: flex-end;
+    /* Navbar — collapse inline links into a hamburger dropdown.
+       Desktop keeps inline <nav>; mobile hides it and reveals .nav-toggle.
+       JS on .nav-toggle flips aria-expanded + .nav-open on <header>. */
+    .nav-toggle {
+        display: inline-flex;
     }
-    nav a { font-size: 0.85rem; }
+    header nav {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: 0;
+        background: rgba(10, 10, 10, 0.98);
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 250ms ease;
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+    }
+    header.nav-open nav {
+        max-height: 420px;
+        padding: 0.5rem 0;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+    header nav a {
+        padding: 0.9rem 5%;
+        width: 100%;
+        font-size: 1rem;
+    }
+    header nav a::after {
+        display: none; /* no hover-underline animation in dropdown */
+    }
+    header nav a:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
 
     /* Hero buttons */
     .btn-group {

@@ -169,3 +169,43 @@ window.triggerPwaInstall = async () => {
   // resolve immediately so a stale bar doesn't linger.
   if (document.readyState === 'complete') finishBar();
 })();
+
+// =====================================================================
+// Mobile hamburger menu toggle.
+//
+// The button is hidden on desktop (CSS @media max-width:768px reveals it).
+// This handler flips aria-expanded (drives the hamburger↔X animation via
+// CSS attribute selector) and toggles .nav-open on <header> (drives the
+// dropdown expansion via max-height transition). Menu auto-closes on link
+// click, Escape, or page transition.
+// =====================================================================
+(function setupNavToggle() {
+  const header = document.querySelector('header');
+  const toggle = header && header.querySelector('.nav-toggle');
+  const nav = header && header.querySelector('nav');
+  if (!header || !toggle || !nav) return;
+
+  function setOpen(open) {
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    header.classList.toggle('nav-open', open);
+  }
+
+  toggle.addEventListener('click', () => {
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+    setOpen(!isOpen);
+  });
+
+  // Close when any nav link is clicked (navigation follows immediately).
+  nav.addEventListener('click', (e) => {
+    if (e.target.closest('a')) setOpen(false);
+  });
+
+  // Close on Escape.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+
+  // Reset on page show (covers fresh load + BFCache restore) so a menu
+  // left open in a cached state doesn't bleed into the next page.
+  window.addEventListener('pageshow', () => setOpen(false));
+})();

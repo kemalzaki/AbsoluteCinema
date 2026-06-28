@@ -15,8 +15,10 @@
 </head>
 <body>
 
-    <!-- Shared header / nav -->
-    <header th:replace="~{fragments/header :: header}"></header>
+    <!-- Shared header / nav — showTitle=false because the hero below shows
+         the full "AbsoluteCinema Reviews" wordmark; navbar keeps just the
+         AC badge to avoid duplicating the title. -->
+    <header th:replace="~{fragments/header :: header(showTitle=false)}"></header>
 
     <section class="hero">
         <div class="hero-content">

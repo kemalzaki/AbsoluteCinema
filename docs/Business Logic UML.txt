@@ -48,7 +48,9 @@ package "Service Layer" {
     }
     
     class EmailService <<Service>> {
-        -mailSender : JavaMailSender
+        -httpClient : HttpClient
+        -brevoApiKey : String
+        -fromAddress : String
         +kirimOtp(tujuan: String, otp: String) : void
     }
     

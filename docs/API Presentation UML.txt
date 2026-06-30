@@ -1,0 +1,89 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package "Controller Layer" {
+    class TayanganController <<RestController>> {
+        -tayanganService : TayanganService
+        +tampilkanKatalog() : List<Tayangan>
+        +tampilkanDetail(id: Long) : Tayangan
+        +tambahTayangan(tayanganBaru: Tayangan) : Tayangan
+        +editTayangan(id: Long, dataEdit: Tayangan) : Tayangan
+        +hapusTayangan(id: Long) : String
+    }
+    
+    class ReviewController <<RestController>> {
+        -reviewService : ReviewService
+        +tambahReview(request: ReviewDTO.Request) : ResponseEntity<?>
+    }
+    
+    class AuthController <<RestController>> {
+        -authService : AuthService
+        +register(dto: UserDTO.RegisterRequest) : ResponseEntity<?>
+        +login(dto: UserDTO.LoginRequest) : ResponseEntity<?>
+        +verifikasiOtp(email: String, otp: String) : ResponseEntity<?>
+        +lupaPassword(email: String) : ResponseEntity<?>
+        +resetPassword(email: String, otp: String, passwordBaru: String) : ResponseEntity<?>
+    }
+    
+    class UIController <<Controller>> {
+        -tayanganService : TayanganService
+        -reviewService : ReviewService
+        -authService : AuthService
+        +index(model: Model) : String
+        +katalog(type: String, model: Model) : String
+        +detail(id: Long, model: Model) : String
+        +reviewForm(id: Long, model: Model, currentUser: CustomUserDetails) : String
+        +loginPage() : String
+        +registerPage() : String
+        +register(username: String, password: String) : String
+    }
+    
+    class AdminController <<Controller>> {
+        -tayanganService : TayanganService
+        +adminPage() : String
+        +tambahFilm(judul: String, sinopsis: String, tahunRilis: int, durasiMenit: int, genre: String, sutradara: String, gambarUrl: String) : String
+        +tambahSerial(judul: String, sinopsis: String, tahunRilis: int, jumlahMusim: int, totalEpisode: int, jaringanTV: String, masihBerjalan: boolean, gambarUrl: String) : String
+        -emptyToNull(s: String) : String
+    }
+    
+    class TmdbController <<RestController>> {
+        -tmdbService : TmdbService
+        -tayanganService : TayanganService
+        +search(query: String, type: String) : ResponseEntity<?>
+        +importItem(type: String, tmdbId: Long) : ResponseEntity<TmdbDTO.ImportResponse>
+        -errorJson(message: String) : Map<String, Object>
+    }
+    
+    class UploadController <<RestController>> {
+        -imageKitService : ImageKitService
+        +uploadGambar(file: MultipartFile) : ResponseEntity<String>
+    }
+
+    class UserController <<RestController>> {
+        -userService : UserService
+        +getProfile(id: Long) : ResponseEntity<?>
+    }
+}
+
+package "Security Layer" {
+    class SecurityConfig <<Configuration>> {
+        +passwordEncoder() : PasswordEncoder
+        +filterChain(http: HttpSecurity) : SecurityFilterChain
+    }
+}
+
+note bottom of TayanganController: Endpoint: /api/tayangan
+note bottom of ReviewController: Endpoint: /api/reviews
+note bottom of AuthController: Endpoint: /api/auth
+note bottom of UploadController: Endpoint: /api/upload
+note bottom of TmdbController: Endpoint: /api/tmdb
+note bottom of UserController: Endpoint: /api/users
+note bottom of AdminController: Endpoint: /admin
+
+TayanganController -[hidden]down- UIController
+ReviewController -[hidden]down- AdminController
+AuthController -[hidden]down- UploadController
+UIController -[hidden]down- UserController
+UserController -[hidden]down- TmdbController
+@enduml

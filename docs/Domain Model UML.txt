@@ -1,0 +1,110 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package "Entity Layer" {
+    interface Rateable <<interface>> {
+        +hitungRatingRataRata() : double
+    }
+
+    abstract class Tayangan <<abstract entity>> {
+        -id : Long
+        -judul : String
+        -sinopsis : String
+        -gambarUrl : String
+        -tahunRilis : int
+        -totalSkor : double
+        -jumlahReviewer : int
+        +tambahReview(skor: int) : void
+        +hitungRatingRataRata() : double
+        +tampilkanDetail() : String
+        +getTotalSkor() : double
+        +getJumlahReviewer() : int
+    }
+
+    class Film <<entity>> {
+        -durasiMenit : int
+        -genre : String
+        -sutradara : String
+        +tampilkanDetail() : String
+    }
+
+    class SerialTV <<entity>> {
+        -jumlahMusim : int
+        -totalEpisode : int
+        -jaringanTV : String
+        -masihBerjalan : boolean
+        +tampilkanDetail() : String
+    }
+
+    class User <<entity>> {
+        -id : Long
+        -username : String
+        -password : String
+        -role : String
+        -email : String
+        -aktif : boolean
+        -reviews : List<Review>
+    }
+
+    class Review <<entity>> {
+        -id : Long
+        -skor : int
+        -teks : String
+        -user : User
+        -tayangan : Tayangan
+    }
+}
+
+package "DTO Layer" {
+    class UserDTO.RegisterRequest <<DTO>> {
+        -email : String
+        -username : String
+        -password : String
+    }
+    
+    class UserDTO.LoginRequest <<DTO>> {
+        -username : String
+        -password : String
+    }
+    
+    class UserDTO.Response <<DTO>> {
+        -id : Long
+        -username : String
+        -role : String
+        -message : String
+    }
+
+    class ReviewDTO.Request <<DTO>> {
+        -skor : int
+        -teks : String
+        -userId : Long
+        -tayanganId : Long
+    }
+
+    class TmdbDTO.SearchResult <<DTO>> {
+        -tmdbId : Long
+        -title : String
+        -year : String
+        -posterUrl : String
+        -overview : String
+        -type : String
+    }
+
+    class TmdbDTO.ImportResponse <<DTO>> {
+        -success : boolean
+        -id : Long
+        -judul : String
+        -message : String
+    }
+}
+
+Rateable <|.. Tayangan : implements
+Tayangan <|-- Film : extends
+Tayangan <|-- SerialTV : extends
+
+Tayangan "1" -- "*" Review : memiliki
+User "1" -- "*" Review : menulis
+Review "*" --> "1" Tayangan
+Review "*" --> "1" User
+@enduml

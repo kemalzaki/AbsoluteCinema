@@ -1,0 +1,149 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+package "Service Layer" {
+    interface TayanganService <<interface>> {
+        +tambahTayangan(tayanganBaru: Tayangan) : Tayangan
+        +lihatSemuaTayangan() : List<Tayangan>
+        +lihatTayanganBerdasarkanId(id: Long) : Tayangan
+        +editTayangan(id: Long, dataEdit: Tayangan) : Tayangan
+        +hapusTayangan(id: Long) : void
+        +perbaruiDataTayangan(tayangan: Tayangan) : void
+    }
+    class TayanganServiceImpl <<Service>> {
+        -filmRepo : FilmRepository
+        -serialTvRepo : SerialTVRepository
+    }
+    
+    interface ReviewService <<interface>> {
+        +tambahReview(reviewDto: ReviewDTO.Request) : Review
+        +lihatReviewBerdasarkanTayangan(tayanganId: Long) : List<Review>
+        +lihatReviewBerdasarkanUser(userId: Long) : List<Review>
+    }
+    class ReviewServiceImpl <<Service>> {
+        -reviewRepository : ReviewRepository
+        -userRepository : UserRepository
+        -tayanganService : TayanganService
+    }
+    
+    interface UserService <<interface>> {
+        +getProfile(id: Long) : UserDTO.Response
+    }
+    class UserServiceImpl <<Service>> {
+        -userRepository : UserRepository
+        +getProfile(id: Long) : UserDTO.Response
+    }
+    
+    class AuthService <<Service>> {
+        -userRepository : UserRepository
+        -passwordEncoder : PasswordEncoder
+        -otpService : OTPMailService
+        -emailService : EmailService
+        +register(dto: UserDTO.RegisterRequest) : UserDTO.Response
+        +login(dto: UserDTO.LoginRequest) : UserDTO.Response
+        +verifikasiOtp(email: String, otp: String) : String
+        +lupaPassword(email: String) : String
+        +resetPassword(email: String, otp: String, passwordBaru: String) : String
+    }
+    
+    class EmailService <<Service>> {
+        -mailSender : JavaMailSender
+        +kirimOtp(tujuan: String, otp: String) : void
+    }
+    
+    class OTPMailService <<Service>> {
+        -otpStorage : Map<String, String>
+        +generateOtp(email: String) : String
+        +validateOtp(email: String, inputOtp: String) : boolean
+    }
+
+    class ImageKitService <<Service>> {
+        -UPLOAD_URL : String
+        -privateKey : String
+        -restClient : RestClient
+        +upload(file: MultipartFile) : String
+        -deriveFileName(file: MultipartFile) : String
+    }
+
+    class TmdbService <<Service>> {
+        -apiKey : String
+        -baseUrl : String
+        -imageBase : String
+        -language : String
+        -restClient : RestClient
+        +search(query: String, type: String) : List<TmdbDTO.SearchResult>
+        +importItem(type: String, tmdbId: Long) : Tayangan
+        -buildFilm(tmdbId: Long) : Film
+        -buildSerialTV(tmdbId: Long) : SerialTV
+        -getJson(builderFn: Function<UriBuilder, URI>) : JsonNode
+        -ensureConfigured() : void
+        -searchPath(type: String) : String
+        -requireYear(date: String) : int
+        -yearOf(date: String) : String
+        -posterUrl(posterPath: String) : String
+        -truncate(s: String, max: int) : String
+        -joinNames(array: JsonNode) : String
+        -firstDirector(crew: JsonNode) : String
+        -firstNetwork(networks: JsonNode) : String
+        -firstNonBlank(a: String, b: String) : String
+    }
+
+    class CustomUserDetailsService <<Service>> {
+        -userRepository : UserRepository
+        +loadUserByUsername(username: String) : UserDetails
+    }
+    
+    class CustomUserDetails <<UserDetails>> {
+        -id : Long
+        -username : String
+        -password : String
+        -authorities : Collection<? extends GrantedAuthority>
+        +getId() : Long
+        +getAuthorities() : Collection<? extends GrantedAuthority>
+        +getPassword() : String
+        +getUsername() : String
+        +isAccountNonExpired() : boolean
+        +isAccountNonLocked() : boolean
+        +isCredentialsNonExpired() : boolean
+        +isEnabled() : boolean
+    }
+}
+
+package "Repository Layer" {
+    interface UserRepository <<interface>> {
+        +findByUsername(username: String) : User
+        +findByEmail(email: String) : User
+    }
+    interface ReviewRepository <<interface>> {
+        +findByTayanganId(id: Long) : List<Review>
+        +findByUserId(userId: Long) : List<Review>
+        +existsByUserIdAndTayanganId(userId: Long, tayanganId: Long) : boolean
+    }
+    interface FilmRepository <<interface>> {
+        +findByJudulContainingIgnoreCase(judul: String) : List<Film>
+    }
+    interface SerialTVRepository <<interface>> {
+        +findByJudulContainingIgnoreCase(judul: String) : List<SerialTV>
+    }
+}
+
+TayanganService <|.. TayanganServiceImpl : implements
+ReviewService <|.. ReviewServiceImpl : implements
+UserService <|.. UserServiceImpl : implements
+
+TayanganServiceImpl --> FilmRepository : menggunakan
+TayanganServiceImpl --> SerialTVRepository : menggunakan
+ReviewServiceImpl --> ReviewRepository : menggunakan
+ReviewServiceImpl --> UserRepository : menggunakan
+ReviewServiceImpl --> TayanganService : menggunakan
+
+AuthService --> UserRepository : menggunakan
+AuthService --> OTPMailService : menggunakan
+AuthService --> EmailService : menggunakan
+
+UserServiceImpl --> UserRepository : menggunakan
+
+CustomUserDetailsService --> UserRepository : menggunakan
+CustomUserDetailsService ..> CustomUserDetails : creates
+@enduml

@@ -36,7 +36,7 @@ package "Controller Layer" {
         +reviewForm(id: Long, model: Model, currentUser: CustomUserDetails) : String
         +loginPage() : String
         +registerPage() : String
-        +register(username: String, password: String) : String
+        +register(username: String, password: String, email: String) : String
     }
     
     class AdminController <<Controller>> {

@@ -48,7 +48,7 @@ package "Entity Layer" {
     }
 
     class Review <<entity>> {
-        -id : Long
+        -id : String
         -skor : int
         -teks : String
         -user : User

@@ -11,7 +11,7 @@ import java.util.List;
 
     // Mencari Serial TV berdasarkan jaringan TV (Contoh: "Netflix", "HBO", "Disney+")
     // Field 'jaringanTV' ada di SerialTV.java
-    List<SerialTV> findByJaringanTV(String jaringantV);
+    List<SerialTV> findByJaringanTV(String jaringanTV);
 
     // Mencari Serial TV berdasarkan status tayang (true = masih berjalan / On-Going, false = tamat)
     // Field 'masihBerjalan' ada di SerialTV.java

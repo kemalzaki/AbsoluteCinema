@@ -11,6 +11,7 @@ Repositori ini merupakan backend service untuk aplikasi Absolute Cinema. Proyek 
 * **Unggah Gambar (ImageKit CDN):** Fitur unggah gambar ke ImageKit.io (CDN eksternal) sehingga menghasilkan URL publik yang disimpan di database — Railway-safe dan tidak hilang saat redeploy.
 * **Import dari TMDB:** Admin dapat mencari film/serial di The Movie Database (themoviedb.org) dan mengimpornya ke katalog dalam satu klik — metadata (judul, sinopsis, tahun, genre, sutradara, jumlah musim/episode, poster) terisi otomatis. API key TMDB tetap di server dan tidak pernah terekspos ke browser.
 * **Katalog Dinamis:** Pemisahan entitas antara Film dan Serial TV dengan properti dan detail yang spesifik untuk masing-masing jenis tayangan.
+* **PWA (Progressive Web APP):** aplikasi dapat diinstal sebagai PWA di Android/desktop dan tetap menampilkan halaman katalog meski koneksi terputus.
 
 ---
 
